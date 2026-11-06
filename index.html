@@ -231,7 +231,7 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
 @media (prefers-reduced-motion:reduce){.wave i{animation:none;height:60%}}
 
 /* Entrada guiada por scroll: roca → mecha → nave */
-.intro{position:relative;height:560vh;width:100vw;margin-left:calc(50% - 50vw)}
+.intro{position:relative;height:300vh;width:100vw;margin-left:calc(50% - 50vw)}
 .intro-stick{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
 #seq{position:absolute;inset:0;width:100%;height:100%;display:block}
 .ov{position:absolute;left:max(24px,env(safe-area-inset-left,0px));right:max(24px,env(safe-area-inset-right,0px));transition:none}
@@ -278,6 +278,19 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
 @media (max-width:520px){.qrdemo{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){.qrbox .scan{animation:none}}
 
+/* Escenas: cada proyecto llega con su portador */
+#sky,#fx{position:fixed;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+#sky{z-index:0}
+#space{z-index:0}
+#fx{z-index:2}
+@media (min-width:981px){
+  .stage.scene{min-height:240vh;padding-block:0}
+  .scene-pin{position:sticky;top:0;height:100vh;display:flex;align-items:center;padding-top:56px}
+  .stage.scene .panel{position:relative;top:auto;transform-origin:50% 50%;opacity:0}
+  .side-right .scene-pin .panel{margin-left:auto}
+  .side-center .scene-pin .panel{margin-inline:auto}
+}
+
 /* Cursor asteroide */
 #cursor{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
 @media (pointer:fine){html.astro,html.astro *{cursor:none!important}}
@@ -285,7 +298,9 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
 </head>
 <body>
 
+<canvas id="sky" aria-hidden="true"></canvas>
 <canvas id="space" aria-hidden="true"></canvas>
+<canvas id="fx" aria-hidden="true"></canvas>
 <div class="vignette" aria-hidden="true"></div>
 
 <header class="topbar">
@@ -389,8 +404,8 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
   </section>
 
   <!-- 2 · RUY -->
-  <section class="stage side-left" id="m-ruy" data-stage="2" data-from="top">
-    <article class="panel hud">
+  <section class="stage scene side-left" id="m-ruy" data-stage="2" data-from="top" data-arrive="planetL" data-exit="star">
+    <div class="scene-pin"><article class="panel hud">
       <div class="head"><span class="m">Misión 01 · 2012</span><span>Alt 70 000 km</span></div>
       <h2>Grupo RUY</h2>
       <p class="sub">Control de acceso y desarrollos</p>
@@ -408,12 +423,12 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
         <div><dt>Especialidad</dt><dd>Seguridad</dd></div>
         <div><dt>Sitio</dt><dd>gruporuy.com</dd></div>
       </dl>
-    </article>
+    </article></div>
   </section>
 
   <!-- 3 · PATENTES -->
-  <section class="stage side-right" id="m-patentes" data-stage="3" data-from="right">
-    <article class="panel hud">
+  <section class="stage scene side-right" id="m-patentes" data-stage="3" data-from="right" data-arrive="planetR" data-exit="cloud">
+    <div class="scene-pin"><article class="panel hud">
       <div class="head"><span class="m">Misión 02 · Patente</span><span>Alt 41 000 km</span></div>
       <h2>MISSER MAX</h2>
       <p class="sub">Tecnología patentada · ingeniería mexicana</p>
@@ -427,12 +442,12 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
         <div><dt>Pulso de apertura</dt><dd>500 mA</dd></div>
         <div><dt>Sin alimentación</dt><dd>Fail Secure</dd></div>
       </dl>
-    </article>
+    </article></div>
   </section>
 
   <!-- 4 · WMDES -->
-  <section class="stage side-left" id="m-wmdes" data-stage="4" data-from="left">
-    <article class="panel hud">
+  <section class="stage scene side-left" id="m-wmdes" data-stage="4" data-from="left" data-arrive="cloud" data-exit="rain">
+    <div class="scene-pin"><article class="panel hud">
       <div class="head"><span class="m">Misión 03 · 2020</span><span>Alt 25 000 km</span></div>
       <h2>Web Masters Designs</h2>
       <p class="sub">Páginas, marcas y menús con impacto</p>
@@ -448,12 +463,12 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
         <video id="webVid" class="lazyvid" data-src="assets/frida.mp4" poster="assets/frida.jpg" muted loop playsinline preload="none"></video>
         <figcaption id="webCap">Menú interactivo · Restaurante Frida</figcaption>
       </figure>
-    </article>
+    </article></div>
   </section>
 
   <!-- 5 · CMMS -->
-  <section class="stage side-right" id="m-cmms" data-stage="5" data-from="bottom">
-    <article class="panel hud">
+  <section class="stage scene side-right" id="m-cmms" data-stage="5" data-from="bottom" data-arrive="drops" data-exit="canopy">
+    <div class="scene-pin"><article class="panel hud">
       <div class="head"><span class="m">Misión 04 · 2026</span><span>Alt 16 500 km</span></div>
       <h2>CMMS Montasur</h2>
       <p class="sub">El mantenimiento convertido en un mundo 3D</p>
@@ -465,12 +480,12 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
       <ul class="chips" style="margin-top:1.1rem">
         <li>Mundo 3D</li><li>Agenda de trabajo</li><li>Tareas</li><li>Estado de la flota</li><li>Atención prioritaria</li><li>Equipo técnico</li>
       </ul>
-    </article>
+    </article></div>
   </section>
 
   <!-- 6 · ATLAS -->
-  <section class="stage side-left" id="m-atlas" data-stage="6" data-from="diag">
-    <article class="panel hud">
+  <section class="stage scene side-left" id="m-atlas" data-stage="6" data-from="diag" data-arrive="canopy" data-exit="leaves">
+    <div class="scene-pin"><article class="panel hud">
       <div class="head"><span class="m">Misión 05 · 2026</span><span>Alt 10 200 km</span></div>
       <h2>Atlas Montacargas 3D</h2>
       <p class="sub">Un montacargas que se separa pieza por pieza</p>
@@ -486,12 +501,12 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
         <div><dt>Sonidos</dt><dd>Fallas</dd></div>
       </dl>
       <a class="btn ghost linkout" href="https://atlasmontacargas.com/" target="_blank" rel="noopener">Visitar atlasmontacargas.com ↗</a>
-    </article>
+    </article></div>
   </section>
 
   <!-- 7 · AGENTES TELEFÓNICOS -->
-  <section class="stage side-right" id="m-agentes" data-stage="7" data-from="spin">
-    <article class="panel hud">
+  <section class="stage scene side-right" id="m-agentes" data-stage="7" data-from="spin" data-arrive="leaves" data-exit="fireflies">
+    <div class="scene-pin"><article class="panel hud">
       <div class="head"><span class="m">Misión 06 · 2026 · Nuevo</span><span>Alt 4 800 km</span></div>
       <h2>Agentes telefónicos con IA</h2>
       <p class="sub">Tu empresa contesta siempre, aunque sean las 3 de la mañana</p>
@@ -509,12 +524,12 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
       <ul class="chips" style="margin-top:1.1rem">
         <li>Atención 24/7</li><li>Agenda y citas</li><li>Seguimiento y cobranza</li><li>Encuestas</li><li>Transferencia a humano</li><li>CRM y WhatsApp</li>
       </ul>
-    </article>
+    </article></div>
   </section>
 
   <!-- 8 · QR -->
-  <section class="stage side-left" id="m-qr" data-stage="8" data-from="depth">
-    <article class="panel hud">
+  <section class="stage scene side-left" id="m-qr" data-stage="8" data-from="depth" data-arrive="fireflies" data-exit="ground">
+    <div class="scene-pin"><article class="panel hud">
       <div class="head"><span class="m">Misión 07 · 2026 · Nuevo</span><span>Alt 1 900 km</span></div>
       <h2>Activos con QR y geolocalización</h2>
       <p class="sub">Control de cualquier activo, a bajo costo</p>
@@ -542,11 +557,11 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
       <ul class="chips" style="margin-top:1.1rem">
         <li>Etiquetas QR</li><li>Ubicación al escanear</li><li>Historial por activo</li><li>Inventario</li><li>Alertas</li><li>Sin hardware costoso</li>
       </ul>
-    </article>
+    </article></div>
   </section>
 
   <!-- 9 · ATERRIZAJE -->
-  <section class="stage landing side-center" id="contacto" data-stage="9" data-from="bottom">
+  <section class="stage landing side-left" id="contacto" data-stage="9" data-from="bottom">
     <article class="panel hud">
       <div class="head"><span class="m">Misión 08 · Tu idea</span><span>Alt 0 km</span></div>
       <h2>¿Qué aterrizamos ahora?</h2>
@@ -599,9 +614,9 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
     el:   [0, .18, -.14, .22, -.2, .12, -.16, .1, -.12, .16],
     roll: [0, .06, -.12, .1, -.08, .12, -.1, .07, -.06, 0],
     // encuadre: la Tierra va al lado contrario del panel (x) o abajo (y)
-    offX: [-.2, 0, -.21, .21, -.21, .21, -.21, .21, -.21, 0],
-    offY: [0, -.05, 0, 0, 0, 0, 0, 0, 0, -.28],
-    shipX:[0, -.5, .45, -.5, .5, -.4, .45, -.45, .4, 0],
+    offX: [-.2, 0, -.21, .21, 0, 0, 0, 0, 0, 0],
+    offY: [0, -.05, 0, 0, 0, 0, 0, 0, 0, 0],
+    shipX:[0, -.5, .45, -.5, .4, -.35, .4, -.35, .3, 0],
     obj:  ['Tierra · México','Tierra · México','Misión 01 · RUY','Misión 02 · MISSER','Misión 03 · WMDES','Misión 04 · CMMS','Misión 05 · Atlas','Misión 06 · Agentes IA','Misión 07 · QR','Aterrizaje · México']
   };
   /* Dirección de entrada de cada transmisión */
@@ -612,6 +627,7 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
     const vh=innerHeight, vw=innerWidth, mob=vw<980;
     panels.forEach(({st,el,f})=>{
       if(!el||!f) return;
+      if(!mob&&st.classList.contains('scene')) return;
       const r=st.getBoundingClientRect();
       let e=(vh-r.top)/(vh*.85); e=Math.max(0,Math.min(1,e)); const k=1-e*e*(3-2*e);
       const dx=f[0]*k*(mob?.35:.6)*vw, dy=f[1]*k*(mob?.25:.5)*vh, rot=f[2]*k, sc=f[3]?1-.45*k:1;
@@ -779,6 +795,138 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
     requestAnimationFrame(draw);
   })();
 
+  /* ---------- Viaje: cielo de fondo y portadores de cada proyecto ---------- */
+  (function journey(){
+    const sky=document.getElementById('sky'), sk=sky.getContext('2d'), fxc=document.getElementById('fx'), fx=fxc.getContext('2d');
+    let w=0,h=0;
+    function rs(){const d=Math.min(devicePixelRatio||1,1.5); w=innerWidth; h=innerHeight; [sky,fxc].forEach(c=>{c.width=w*d;c.height=h*d;}); sk.setTransform(d,0,0,d,0,0); fx.setTransform(d,0,0,d,0,0);}
+    rs(); addEventListener('resize',rs);
+    const cl=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)), sm=(a,b,v)=>{const t=cl((v-a)/(b-a));return t*t*(3-2*t);}, bandF=(v,a,b,c,d)=>Math.min(sm(a,b,v),1-sm(c,d,v));
+    let seedv=7; const rnd=()=>((seedv=(seedv*9301+49297)%233280)/233280);
+    function cloudSprite(W2,H2,n,tone){const c=document.createElement('canvas');c.width=W2;c.height=H2;const x=c.getContext('2d');
+      try{x.filter='blur('+Math.round(H2*.018)+'px)';}catch(e){}
+      for(let i=0;i<n*3;i++){const u=rnd(),px=W2*(.12+.76*u),dome=Math.sin(u*Math.PI),py=H2*(.62-.32*dome*rnd()-.08*rnd()),r=H2*(.06+.16*rnd())*(.6+.6*dome);
+        const lit=py<H2*.45?1:.82;
+        const g=x.createRadialGradient(px-r*.25,py-r*.35,0,px,py,r);g.addColorStop(0,`rgba(${tone[0]*lit|0},${tone[1]*lit|0},${tone[2]*lit|0},.32)`);g.addColorStop(.7,`rgba(${tone[0]-60},${tone[1]-50},${tone[2]-30},.12)`);g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.beginPath();x.arc(px,py,r,0,7);x.fill();}
+      return c;}
+    const clouds=[cloudSprite(900,420,60,[235,242,255]),cloudSprite(1100,460,70,[205,218,240]),cloudSprite(800,380,50,[225,232,250])];
+    const bigCloud=cloudSprite(1400,700,110,[245,248,255]);
+    function treeline(W2,H2,dark,mid,light,n){const c=document.createElement('canvas');c.width=W2;c.height=H2;const x=c.getContext('2d');
+      x.fillStyle=dark;x.fillRect(0,H2*.5,W2,H2*.5);
+      // copas: cúmulos de hojas pequeños, con luz arriba-izquierda
+      for(let t=0;t<Math.round(W2/70);t++){const tx=(t+.5*rnd())*70,ty=H2*(.18+rnd()*.3),tr=H2*(.14+rnd()*.12);
+        for(let i=0;i<n;i++){const a=rnd()*6.283,d=Math.sqrt(rnd())*tr,px=tx+Math.cos(a)*d,py=ty+Math.sin(a)*d*.8,r=H2*(.012+rnd()*.03);
+          const up=(ty-py)/tr; x.fillStyle=up>.25?light:(up>-.2?mid:dark); x.globalAlpha=.55+.45*rnd(); x.beginPath(); x.arc(px,py,r,0,7); x.fill();}
+        x.globalAlpha=1; x.fillStyle=dark; x.fillRect(tx-3,ty+tr*.6,6,H2);}
+      const sh=x.createLinearGradient(0,0,0,H2); sh.addColorStop(0,'rgba(0,0,0,0)'); sh.addColorStop(1,'rgba(0,0,0,.55)'); x.fillStyle=sh; x.fillRect(0,0,W2,H2);
+      return c;}
+    const canopy=treeline(2000,520,'#04110a','#123a22','#2c6a35',70), farTrees=treeline(2000,240,'#06090e','#0d141b','#1a2530',40);
+    const drops=[...Array(150)].map(()=>({x:rnd(),y:rnd(),l:.02+rnd()*.04,v:.9+rnd()*.8}));
+    const flies=[...Array(81)].map((_,i)=>({x:rnd(),y:rnd(),p:rnd()*6}));
+    const leafs=[...Array(60)].map(()=>({a:rnd()*6.28,r:rnd(),s:4+rnd()*6,c:['#3f8f3a','#6fb64a','#d99a2b','#c4502a','#2f6e3a'][Math.floor(rnd()*5)],sp:rnd()*6}));
+    const skyStars=[...Array(140)].map(()=>({x:rnd(),y:rnd()*.55,a:.2+rnd()*.6}));
+    const SKY=[[2.9,'#03050b','#03050b'],[3.6,'#060f2c','#18397c'],[4.4,'#0b1a3d','#3c63a0'],[5.3,'#0f1828','#36485e'],[6.2,'#0b1b2c','#3a5666'],[7.1,'#1a1b42','#b0553a'],[8.0,'#0f1434','#d46d3c'],[9,'#0b0f28','#ee8848']];
+    const hx=c=>[parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];
+    const mix=(a,b,t)=>{const A=hx(a),B=hx(b);return `rgb(${A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(',')})`;};
+    function skyAt(s){if(s<=SKY[0][0])return [SKY[0][1],SKY[0][2]];for(let i=1;i<SKY.length;i++){if(s<=SKY[i][0]){const t=(s-SKY[i-1][0])/(SKY[i][0]-SKY[i-1][0]);return [mix(SKY[i-1][1],SKY[i][1],t),mix(SKY[i-1][2],SKY[i][2],t)];}}return [SKY[SKY.length-1][1],SKY[SKY.length-1][2]];}
+    const scenes=[...document.querySelectorAll('.scene')].map(st=>({st,pin:st.querySelector('.scene-pin'),el:st.querySelector('.panel'),arr:st.dataset.arrive,ex:st.dataset.exit}));
+    const ease=t=>t*t*(3-2*t);
+    function Tof(sc){const r=sc.st.getBoundingClientRect();return (h-r.top)/Math.max(1,r.height);}
+    const EXIT={
+      star:k=>[k*.7*w,-k*.55*h,1-.9*k,25*k,1-k,0],
+      cloud:k=>[-k*.55*w,-.05*h*k,1-.2*k,0,1-k,14*k],
+      rain:k=>[0,k*.6*h,1,0,1-k,5*k],
+      canopy:k=>[0,k*.7*h,1-.3*k,0,1-k,3*k],
+      leaves:k=>[-k*.8*w,k*.2*h,1-.5*k,-30*k,1-k,0],
+      fireflies:k=>[0,0,1+.15*k,0,1-k,10*k],
+      ground:k=>[0,k*.5*h,1-.4*k,0,1-k,0]
+    };
+    function placePanel(sc,T){
+      const el=sc.el; if(w<981||reduce){el.style.transform='';el.style.opacity='';el.style.filter='';return;}
+      const pr=sc.pin.getBoundingClientRect(), pw=el.offsetWidth, ph=el.offsetHeight;
+      const fit=Math.min(1,(h-90)/ph), rx=pr.left+el.offsetLeft+pw/2, ry=pr.top+el.offsetTop+ph/2;
+      let tx=0,ty=0,sc2=fit,rot=0,op=1,bl=0;
+      if(T<.5){tx=w/2-rx;ty=h*.5-ry;sc2=.04;op=0;}
+      else if(T<.62){const k=ease((T-.5)/.12);tx=(1-k)*(w/2-rx);ty=(1-k)*(h*.5-ry);sc2=lerp(.04,fit,k);op=k;}
+      else if(T>.86){const k=ease(cl((T-.86)/.14));const e=EXIT[sc.ex](k);tx=e[0];ty=e[1];sc2=fit*e[2];rot=e[3];op=e[4];bl=e[5];}
+      el.style.transform=`translate3d(${tx}px,${ty}px,0) rotate(${rot}deg) scale(${sc2})`; el.style.opacity=String(op); el.style.filter=bl>.2?`blur(${bl}px)`:'';
+    }
+    function star(x,y,ang,k){const L=Math.min(w,h)*.5;const tx=x-Math.cos(ang)*L,ty=y-Math.sin(ang)*L;const g=fx.createLinearGradient(tx,ty,x,y);g.addColorStop(0,'rgba(255,140,60,0)');g.addColorStop(1,`rgba(255,240,220,${.9*k})`);
+      fx.strokeStyle=g;fx.lineWidth=3;fx.beginPath();fx.moveTo(tx,ty);fx.lineTo(x,y);fx.stroke();const r=fx.createRadialGradient(x,y,0,x,y,26);r.addColorStop(0,`rgba(255,255,255,${k})`);r.addColorStop(.3,`rgba(255,180,90,${.7*k})`);r.addColorStop(1,'rgba(255,90,30,0)');fx.fillStyle=r;fx.beginPath();fx.arc(x,y,26,0,7);fx.fill();}
+    function drawCloud(img,x,y,ww,a){if(a<=0)return;fx.globalAlpha=Math.min(1,a);const hh=ww*img.height/img.width;fx.drawImage(img,x-ww/2,y-hh/2,ww,hh);fx.globalAlpha=1;}
+    function leaf(x,y,sz,rot,c,a){if(a<=0)return;fx.save();fx.translate(x,y);fx.rotate(rot);fx.globalAlpha=a;fx.fillStyle=c;fx.beginPath();fx.ellipse(0,0,sz,sz*.45,0,0,7);fx.fill();fx.strokeStyle='rgba(0,0,0,.25)';fx.beginPath();fx.moveTo(-sz,0);fx.lineTo(sz,0);fx.stroke();fx.restore();}
+    function fly(x,y,a){if(a<=0)return;const r=fx.createRadialGradient(x,y,0,x,y,9);r.addColorStop(0,`rgba(255,240,170,${a})`);r.addColorStop(.4,`rgba(255,190,80,${a*.5})`);r.addColorStop(1,'rgba(255,150,40,0)');fx.fillStyle=r;fx.beginPath();fx.arc(x,y,9,0,7);fx.fill();}
+    const bez=(a,b,c,t)=>(1-t)*(1-t)*a+2*(1-t)*t*b+t*t*c;
+
+    window.__journey=(s,time,dt,vel)=>{
+      // ----- cielo -----
+      const [top,bot]=skyAt(s); const g=sk.createLinearGradient(0,0,0,h); g.addColorStop(0,top); g.addColorStop(1,bot); sk.fillStyle=g; sk.fillRect(0,0,w,h);
+      const re=bandF(s,3.2,3.55,3.7,4.0);
+      if(re>0){const r=sk.createRadialGradient(w/2,h/2,Math.min(w,h)*.25,w/2,h/2,Math.max(w,h)*.75);r.addColorStop(0,'rgba(0,0,0,0)');r.addColorStop(1,`rgba(255,110,40,${.55*re})`);sk.fillStyle=r;sk.fillRect(0,0,w,h);}
+      const st=sm(6.7,7.4,s); if(st>0){sk.fillStyle='#fff';skyStars.forEach(p=>{sk.globalAlpha=p.a*st*(.6+.4*Math.sin(time*2+p.x*40));sk.fillRect(p.x*w,p.y*h,1.3,1.3);});sk.globalAlpha=1;}
+      const ca=bandF(s,3.4,3.9,5.0,5.5);
+      if(ca>0){for(let i=0;i<7;i++){const img=clouds[i%3],ww=w*(.55+.25*(i%3)),y=((i*.31+(s-3.4)*.55)%1.4)*h*1.25-h*.25,x=((i*.37+time*.008*(1+i%2))%1.3)*w*1.2-w*.2; sk.globalAlpha=ca*(.35+.15*(i%3)); sk.drawImage(img,x-ww/2,h-y-ww*.23,ww,ww*.47);} sk.globalAlpha=1;}
+      const ra=bandF(s,4.55,4.95,5.75,6.15);
+      if(ra>0&&!reduce){sk.strokeStyle=`rgba(190,215,255,${.45*ra})`;sk.lineWidth=1.2;sk.beginPath();drops.forEach(d=>{const y=((d.y+time*d.v*.9)%1.1)*h-h*.05,x=(d.x*w+y*.18)%w;sk.moveTo(x,y);sk.lineTo(x+d.l*h*.18,y+d.l*h);});sk.stroke();}
+      const tA=sm(5.45,6.0,s), tPass=sm(6.25,6.95,s);
+      if(tA>0&&tPass<1){const ch=h*.62, y=h-ch*.55*tA-tPass*h*1.3; const ww=Math.max(w,ch*canopy.width/canopy.height); sk.drawImage(canopy,(w-ww)/2,y,ww,ch);}
+      const gA=sm(7.0,8.2,s);
+      if(gA>0){const hy=lerp(h*1.1,h*.6,gA); sk.drawImage(farTrees,0,hy-h*.16,w,h*.2);
+        const gg=sk.createLinearGradient(0,hy,0,h); gg.addColorStop(0,'#141a1e'); gg.addColorStop(1,'#07090b'); sk.fillStyle=gg; sk.fillRect(0,hy,w,h-hy);
+        const pk=sm(8.2,8.9,s); if(pk>0){const px=w*(w<981?.5:.7), py=h*(w<981?.8:.79)+h*.05; sk.save(); sk.globalAlpha=pk;
+          sk.fillStyle='rgba(255,130,50,.12)'; sk.beginPath(); sk.ellipse(px,py,w*.13,h*.035,0,0,7); sk.fill();
+          sk.strokeStyle='rgba(255,150,70,.6)'; sk.lineWidth=1.5; sk.beginPath(); sk.ellipse(px,py,w*.13,h*.035,0,0,7); sk.stroke();
+          for(let i=0;i<10;i++){const a=i/10*6.283, on=(Math.floor(time*3)+i)%10<3; sk.fillStyle=on?'#ffb547':'rgba(255,181,71,.25)'; sk.beginPath(); sk.arc(px+Math.cos(a)*w*.13,py+Math.sin(a)*h*.035,2.6,0,7); sk.fill();}
+          const sh=sk.createRadialGradient(px,py,0,px,py,w*.09); sh.addColorStop(0,'rgba(0,0,0,.55)'); sh.addColorStop(1,'rgba(0,0,0,0)'); sk.fillStyle=sh; sk.beginPath(); sk.ellipse(px,py,w*.09,h*.025,0,0,7); sk.fill(); sk.restore();}
+        const fa=bandF(s,7.4,7.9,9.5,10); if(fa>0){flies.slice(0,40).forEach(f=>{const x=(f.x*w+Math.sin(time*.6+f.p)*30)%w, y=hy+(h-hy)*(.1+f.y*.8)+Math.cos(time*.8+f.p)*12; sk.globalAlpha=fa*(.4+.6*Math.max(0,Math.sin(time*2+f.p))); sk.fillStyle='#ffd37a'; sk.beginPath(); sk.arc(x,y,1.6,0,7); sk.fill();}); sk.globalAlpha=1;}
+      }
+
+      // ----- portadores -----
+      fx.clearRect(0,0,w,h);
+      const cx=w/2, cy=h*.5, R=Math.min(w,h)*.17;
+      let p0=null,p1=null;
+      scenes.forEach(sc=>{
+        const T=Tof(sc); placePanel(sc,cl(T,0,1.2));
+        if(T<0||T>1.15) return;
+        const arrive=ease(cl((T-.2)/.3)), out=ease(cl((T-.86)/.14));
+        switch(sc.arr){
+          case 'planetL':{
+            let x=bez(-R*1.5,w*.18,cx,arrive), y=bez(h*.15,h*.05,cy,arrive);
+            if(T>.8){const k=cl((T-.8)/.2), sx=lerp(-w*.1,w*1.25,k), sy=lerp(h*.95,-h*.3,k); star(sx,sy,Math.atan2(-1.25*h,1.35*w),1-Math.max(0,(k-.9)*10)); if(T>.86){x=lerp(x,sx,out);y=lerp(y,sy,out);}}
+            p0=[x,y,R*(T<.5?.7+.3*arrive:1)*(1-.5*out),time*.6+T*8];break;}
+          case 'planetR':{
+            let x=bez(w+R*1.5,w*.85,cx,arrive), y=bez(h*.9,h*.75,cy,arrive);
+            const go=ease(cl((T-.6)/.3)); if(go>0){x=bez(cx,w*.2,-R*2,go);y=bez(cy,h*.25,h*.1,go);}
+            p1=[x,y,R*(1-.35*go),-time*.5-T*8]; break;}
+          case 'cloud':{
+            const lv=ease(cl((T-.62)/.2)), a=cl((T-.15)/.25)*(1-lv);
+            drawCloud(bigCloud,cx+lv*w*.7,cy-lv*h*.2,w*(.55+.25*arrive),a); break;}
+          case 'drops':{
+            if(T<.62){fx.strokeStyle='rgba(200,225,255,.8)';fx.lineWidth=2;fx.beginPath();drops.slice(0,70).forEach(d=>{const k=cl((T-.15-d.x*.12)/.35),x=lerp(d.x*w,cx+(d.x-.5)*40,ease(k)),y=lerp(-30-d.y*h*.4,cy,ease(k));if(k<1){fx.moveTo(x,y);fx.lineTo(x,y-18);}});fx.stroke();
+              const sp=cl((T-.48)/.14); if(sp>0){fx.strokeStyle=`rgba(200,225,255,${1-sp})`;fx.lineWidth=2;for(let r2=0;r2<3;r2++){fx.beginPath();fx.ellipse(cx,cy,sp*(60+r2*50),sp*(16+r2*12),0,0,7);fx.stroke();}}}
+            break;}
+          case 'canopy':{
+            if(T>.12&&T<.72){leafs.forEach(l=>{const k=cl((T-.15-l.r*.15)/.4),x=lerp(cx+(l.r-.5)*w*.5,cx+Math.cos(l.a)*l.r*90,ease(k)),y=lerp(h+20,cy+Math.sin(l.a)*l.r*60,ease(k));leaf(x,y,l.s,l.sp+time*2,l.c,1-cl((T-.6)/.12));});}
+            break;}
+          case 'leaves':{
+            if(T>.1&&T<.7){leafs.forEach(l=>{const k=ease(cl((T-.12-l.r*.12)/.38)),ang=l.a+(1-k)*4,rad=lerp(w*.6,40+l.r*80,k),x=cx+Math.cos(ang)*rad+(1-k)*w*.3,y=cy+Math.sin(ang)*rad*.5;leaf(x,y,l.s,l.sp+time*3,l.c,1-cl((T-.58)/.12));});}
+            break;}
+          case 'fireflies':{
+            if(T>.08&&T<.7){flies.forEach((f,i)=>{const gx=i%9,gy=Math.floor(i/9)%9,k=ease(cl((T-.12-f.p*.02)/.36)),x=lerp(f.x*w,cx+(gx-4)*16,k)+Math.sin(time*2+f.p)*(1-k)*20,y=lerp(f.y*h,cy+(gy-4)*16,k)+Math.cos(time*2+f.p)*(1-k)*20;fly(x,y,(1-cl((T-.58)/.12))*(.6+.4*Math.sin(time*5+f.p)));});}
+            break;}
+        }
+        if(T>.86&&T<1.05){const k=cl((T-.86)/.14);
+          if(sc.ex==='cloud') drawCloud(bigCloud,lerp(w*1.3,cx-w*.1,ease(Math.min(1,k*1.4)))-ease(k)*w*.3,cy,w*.75,Math.min(1,k*2)*(1-cl((k-.8)*5)));
+          if(sc.ex==='rain'&&!reduce){fx.strokeStyle='rgba(200,225,255,.7)';fx.lineWidth=2;fx.beginPath();drops.forEach(d=>{const y=((d.y+k*1.6)%1)*h,x=d.x*w;fx.moveTo(x,y);fx.lineTo(x+3,y+26);});fx.stroke();}
+          if(sc.ex==='leaves') leafs.forEach(l=>{const x=lerp(w*1.1,-w*.2,cl(k*1.2-l.r*.2)),y=cy+Math.sin(l.a+k*6)*h*.3;leaf(x,y,l.s,l.sp+k*20,l.c,1);});
+          if(sc.ex==='fireflies') flies.forEach(f=>{const x=cx+(f.x-.5)*w*.5*(.3+k),y=cy+(f.y-.5)*h*.6*(.3+k);fly(x,y,1-k);});
+        }
+      });
+      if(window.__placePlanet){ if(p0) window.__placePlanet(0,...p0); else window.__placePlanet(0); if(p1) window.__placePlanet(1,...p1); else window.__placePlanet(1); }
+    };
+    if(!window.THREE){ (function loop(t){ window.__journey(stageAt(scrollY),t/1000,.016,0); requestAnimationFrame(loop);} )(0); }
+  })();
+
   /* ---------- Formulario → WhatsApp ---------- */
   const form=document.getElementById('ideaForm'), wa=document.getElementById('waLink'), st=document.getElementById('fStatus');
   form.addEventListener('submit',e=>{
@@ -800,12 +948,12 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
   let renderer;
   try{
     if(!window.THREE) throw 0;
-    renderer = new THREE.WebGLRenderer({canvas:document.getElementById('space'),antialias:true,powerPreference:'high-performance'});
+    renderer = new THREE.WebGLRenderer({canvas:document.getElementById('space'),antialias:true,alpha:true,powerPreference:'high-performance'});
   }catch(err){ document.body.classList.add('no-webgl'); loopHudOnly(); return; }
 
   const T = THREE;
   renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
-  renderer.setClearColor(0x03050b,1);
+  renderer.setClearColor(0x000000,0);
   renderer.outputEncoding = T.sRGBEncoding;
   const scene = new T.Scene();
   const camera = new T.PerspectiveCamera(35,1,0.01,2000);
@@ -816,6 +964,7 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
   const dl = new T.DirectionalLight(0xffffff,1.6); dl.position.copy(SUN).multiplyScalar(10); scene.add(dl);
 
   /* Estrellas */
+  let starPts; const nebs=[];
   (function stars(){
     const n=7000, pos=new Float32Array(n*3), col=new Float32Array(n*3);
     for(let i=0;i<n;i++){
@@ -825,7 +974,7 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
       col.set([w*b*0.85, w*b*0.92, w],i*3);
     }
     const g=new T.BufferGeometry(); g.setAttribute('position',new T.BufferAttribute(pos,3)); g.setAttribute('color',new T.BufferAttribute(col,3));
-    scene.add(new T.Points(g,new T.PointsMaterial({size:1.6,sizeAttenuation:false,vertexColors:true,transparent:true,opacity:.9,depthWrite:false})));
+    starPts=new T.Points(g,new T.PointsMaterial({size:1.6,sizeAttenuation:false,vertexColors:true,transparent:true,opacity:.9,depthWrite:false})); scene.add(starPts);
   })();
 
   /* Nebulosas (sprites de canvas) */
@@ -837,7 +986,7 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
   const nebTex=glowTex([[0,'rgba(60,120,255,.35)'],[.5,'rgba(40,60,160,.12)'],[1,'rgba(0,0,0,0)']]);
   [[-380,160,-520,700],[420,-220,-600,900],[-200,-300,500,800]].forEach(([x,y,z,s])=>{
     const sp=new T.Sprite(new T.SpriteMaterial({map:nebTex,transparent:true,depthWrite:false,blending:T.AdditiveBlending,opacity:.55}));
-    sp.position.set(x,y,z); sp.scale.set(s,s,1); scene.add(sp);
+    sp.position.set(x,y,z); sp.scale.set(s,s,1); scene.add(sp); nebs.push(sp);
   });
 
   /* Tierra */
@@ -846,10 +995,10 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
   [dayTex,nightTex].forEach(t=>{t.anisotropy=renderer.capabilities.getMaxAnisotropy();});
   const globe=new T.Group(); globe.rotation.order='XYZ'; scene.add(globe);
   const earthMat=new T.ShaderMaterial({
-    uniforms:{day:{value:dayTex},night:{value:nightTex},sun:{value:SUN}},
+    transparent:true,premultipliedAlpha:true,uniforms:{day:{value:dayTex},night:{value:nightTex},sun:{value:SUN},fade:{value:1}},
     vertexShader:`varying vec2 vUv;varying vec3 vN;varying vec3 vW;
       void main(){vUv=uv;vN=normalize(mat3(modelMatrix)*normal);vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}`,
-    fragmentShader:`uniform sampler2D day;uniform sampler2D night;uniform vec3 sun;varying vec2 vUv;varying vec3 vN;varying vec3 vW;
+    fragmentShader:`uniform sampler2D day;uniform sampler2D night;uniform vec3 sun;uniform float fade;varying vec2 vUv;varying vec3 vN;varying vec3 vW;
       void main(){vec3 n=normalize(vN);float d=dot(n,sun);
         vec3 dc=texture2D(day,vUv).rgb; vec3 nc=texture2D(night,vUv).rgb;
         dc=pow(dc,vec3(2.2)); nc=pow(nc,vec3(2.2));
@@ -859,14 +1008,14 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
         col+=vec3(.25,.6,1.)*rim*(.35+.9*lit);
         vec3 h=normalize(sun+v); float spec=pow(max(dot(n,h),0.),90.)*lit*(1.-smoothstep(.02,.08,dc.g+dc.r));
         col+=vec3(.35,.55,.9)*spec*.08;
-        gl_FragColor=vec4(pow(col,vec3(1./2.2)),1.);}`
+        gl_FragColor=vec4(pow(col,vec3(1./2.2))*fade,fade);}`
   });
   const earth=new T.Mesh(new T.SphereGeometry(1,160,96),earthMat); globe.add(earth);
   const atmo=new T.Mesh(new T.SphereGeometry(1.14,96,64),new T.ShaderMaterial({
     side:T.BackSide,transparent:true,blending:T.AdditiveBlending,depthWrite:false,
-    uniforms:{sun:{value:SUN}},
+    uniforms:{sun:{value:SUN},fade:{value:1}},
     vertexShader:`varying vec3 vN;varying vec3 vWN;void main(){vN=normalize(normalMatrix*normal);vWN=normalize(mat3(modelMatrix)*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
-    fragmentShader:`varying vec3 vN;varying vec3 vWN;uniform vec3 sun;void main(){float i=pow(.72-dot(vN,vec3(0,0,1.)),3.2);float l=.35+.65*smoothstep(-.4,.5,dot(-vWN,sun)*-1.);gl_FragColor=vec4(vec3(.3,.65,1.)*i*1.6*l,i);}`
+    fragmentShader:`varying vec3 vN;varying vec3 vWN;uniform vec3 sun;uniform float fade;void main(){float i=pow(.72-dot(vN,vec3(0,0,1.)),3.2);float l=.35+.65*smoothstep(-.4,.5,dot(-vWN,sun)*-1.);gl_FragColor=vec4(vec3(.3,.65,1.)*i*1.6*l*fade,i*fade);}`
   }));
   scene.add(atmo);
 
@@ -959,21 +1108,23 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
     {c:['#140a2e','#4a2a9a','#9f7bff','#e3d9ff'],seed:17,bands:6},
     {c:['#2b0a05','#8a2410','#ff6a2b','#ffc27a'],seed:19,ring:0xff6a2b}
   ];
-  const planets=[], pose=(st)=>{const e=new T.Euler(-K.el[st],K.az[st],K.roll[st],'YXZ'),q=new T.Quaternion().setFromEuler(e);return {q,pos:new T.Vector3(0,0,K.dist[st]).applyQuaternion(q)};};
-  PL.forEach((d,j)=>{
-    const st=j+2, {q,pos}=pose(st), dd=K.dist[st], side=K.offX[st]<0?1:-1, D=.48*dd;
-    const local=new T.Vector3(side*D*.42, D*.2, -D);
-    const g=new T.Group(); g.position.copy(local.applyQuaternion(q).add(pos));
-    const r=.07*dd;
-    const m=new T.Mesh(new T.SphereGeometry(r,64,32),new T.MeshStandardMaterial({map:noiseTex(d.c.map(hex),d.seed,{bands:d.bands}),roughness:.85,metalness:.05}));
+  const carrierPlanets=[0,1].map(j=>{
+    const d=PL[j], g=new T.Group();
+    const m=new T.Mesh(new T.SphereGeometry(1,64,32),new T.MeshStandardMaterial({map:noiseTex(d.c.map(hex),d.seed,{bands:d.bands}),roughness:.85,metalness:.05}));
     m.rotation.z=.35; g.add(m);
-    const halo=new T.Mesh(new T.SphereGeometry(r*1.12,48,24),new T.ShaderMaterial({side:T.BackSide,transparent:true,blending:T.AdditiveBlending,depthWrite:false,uniforms:{c:{value:new T.Color(d.ring||hex(d.c[2]).reduce((a,v,i)=>a+v*[65536,256,1][i],0))}},
+    const col=hex(d.c[2]);
+    const halo=new T.Mesh(new T.SphereGeometry(1.14,48,24),new T.ShaderMaterial({side:T.BackSide,transparent:true,blending:T.AdditiveBlending,depthWrite:false,uniforms:{c:{value:new T.Color(col[0]/255,col[1]/255,col[2]/255)}},
       vertexShader:`varying vec3 vN;void main(){vN=normalize(normalMatrix*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
-      fragmentShader:`uniform vec3 c;varying vec3 vN;void main(){float i=pow(.75-dot(vN,vec3(0,0,1.)),3.);gl_FragColor=vec4(c*i*1.4,i);}`}));
-    g.add(halo);
-    if(d.ring){const rg=new T.Mesh(new T.RingGeometry(r*1.45,r*2.1,96),new T.MeshBasicMaterial({color:d.ring,transparent:true,opacity:.35,side:T.DoubleSide,depthWrite:false}));rg.rotation.x=1.25;rg.rotation.y=.25;g.add(rg);}
-    g.userData={m,st}; g.scale.setScalar(.001); scene.add(g); planets.push(g);
+      fragmentShader:`uniform vec3 c;varying vec3 vN;void main(){float i=pow(.75-dot(vN,vec3(0,0,1.)),3.);gl_FragColor=vec4(c*i*1.6,i);}`}));
+    g.add(halo); g.visible=false; g.userData={m}; camera.add(g); return g;
   });
+  const plLight=new T.DirectionalLight(0xffffff,1.3); plLight.position.set(-2,2,3); camera.add(plLight);
+  window.__placePlanet=(j,px,py,rpx,spin)=>{ // coloca un planeta en pixeles de pantalla
+    const g=carrierPlanets[j]; if(px==null){g.visible=false;return;}
+    const D=7, th=Math.tan(camera.fov*Math.PI/360), ox=camera.view?camera.view.offsetX:0, oy=camera.view?camera.view.offsetY:0;
+    const nx=((px+ox)/W)*2-1, ny=1-2*((py+oy)/H);
+    g.position.set(nx*D*th*camera.aspect, ny*D*th, -D); g.scale.setScalar(rpx/H*2*D*th); g.userData.m.rotation.y=spin; g.visible=true;
+  };
 
   /* ---------- Rocas flotantes que pasan con el scroll ---------- */
   const rockMat=new T.MeshStandardMaterial({color:0x323844,roughness:.95,metalness:.05,flatShading:true});
@@ -995,7 +1146,7 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
     frameView(sCur||0);
   }
   function frameView(s){
-    if(mobile) camera.setViewOffset(W,H,0,H*0.16,W,H);
+    if(mobile) camera.setViewOffset(W,H,0,H*0.16*(1-Math.max(0,Math.min(1,(s-3.25)/.65))),W,H);
     else camera.setViewOffset(W,H,sample(K.offX,s)*W,sample(K.offY,s)*H,W,H);
     camera.updateProjectionMatrix();
   }
@@ -1039,7 +1190,7 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
       if(m.t>=0){ m.t+=dt; const k=(m.t%2.4)/2.4; m.ring.scale.setScalar(.008+k*.05); m.ring.material.opacity=(1-k)*.8; }
       else m.ring.material.opacity=0;
     });
-    const land=Math.max(0,Math.min(1,(s-8.2)/.8));
+    const land=0, park=Math.max(0,Math.min(1,(s-8.35)/.65));
     beam.material.uniforms.a.value=land*(.85+.15*Math.sin(time*6));
     beam.scale.y=.2+land*.9; beam.position.y=beam.scale.y/2;
 
@@ -1057,25 +1208,32 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
       // inclinación con la velocidad de scroll, el viraje y el puntero
       eul.set(-.18+Math.max(-.35,Math.min(.35,vel*.0004))+my*.06, mx*.25+bank*.5, -mx*.05-bank+(reduce?0:Math.sin(time*.7)*.03));
       qTarget.setFromEuler(eul); ship.quaternion.slerp(qTarget,.08);
-      // al aterrizar: desciende hacia el faro
-      if(land>0){
-        ship.position.y=lerp(py,py-1.2,land); ship.position.z=lerp(pz,pz-1.5,land);
+      // aterrizaje: la nave baja y queda estacionada sobre la plataforma
+      if(park>0){
+        const th=Math.tan(camera.fov*Math.PI/360), D=6, k=park*park*(3-2*park);
+        const gx=mobile?.5:.7, gy=mobile?.8:.79, nx=gx*2-1, ny=1-2*gy;
+        ship.position.set(lerp(ship.position.x,nx*D*th*camera.aspect,k),lerp(ship.position.y,ny*D*th+.18,k),lerp(ship.position.z,-D,k));
+        ship.scale.setScalar(lerp(ship.scale.x,mobile?.2:.24,k));
+        eul.set(lerp(-.18,-.42,k),lerp(0,-.55,k),0); qTarget.setFromEuler(eul); ship.quaternion.slerp(qTarget,.15);
       }
-      const pulse=.9+.25*Math.sin(time*9)+Math.min(.8,Math.abs(vel)*.0015);
+      const pulse=(.9+.25*Math.sin(time*9)+Math.min(.8,Math.abs(vel)*.0015))*(1-park*.75);
       thr.forEach((s2,i)=>{const k=(i===4?.8:1.15)*pulse; s2.scale.set(k,k,1);});
     }
 
-    // planetas: crecen al acercarse su misión y giran
-    planets.forEach(g=>{const k=Math.max(0,1-Math.abs(s-g.userData.st)/1.6); const tgt=k>0?Math.max(.001,Math.min(1,k*1.6)):.001; g.scale.setScalar(lerp(g.scale.x,tgt,.08)); g.userData.m.rotation.y+=dt*.12;});
+    // atmósfera: la Tierra y el espacio se desvanecen al entrar
+    const atm=Math.max(0,Math.min(1,(s-3.25)/.65));
+    earthMat.uniforms.fade.value=1-atm; atmo.material.uniforms.fade.value=1-atm; globe.visible=atm<.99; atmo.visible=atm<.99;
+    if(starPts) starPts.material.opacity=.9*(1-atm); nebs.forEach(n=>n.material.opacity=.55*(1-atm));
+    if(window.__journey) window.__journey(s,time,dt,vel);
 
     // rocas: pasan junto a la cámara al hacer scroll
-    const vr=Math.min(1,Math.abs(vel)/2500), rv=(reduce?0:(.5+vr*14))*(vel>=0?1:-1), rockOn=Math.max(0,Math.min(1,(introP-.9)/.1))*(1-land);
+    const vr=Math.min(1,Math.abs(vel)/2500), rv=(reduce?0:(.5+vr*14))*(vel>=0?1:-1), rockOn=Math.max(0,Math.min(1,(introP-.9)/.1))*(1-park)*(1-atm);
     rocks.forEach(m=>{const u=m.userData; u.z+=rv*dt; if(u.z>-1.5)u.z-=18; if(u.z<-19.5)u.z+=18;
       m.position.set(u.x,u.y,u.z); m.rotation.x+=u.rx*dt; m.rotation.y+=u.ry*dt; m.scale.setScalar(u.s*rockOn+.0001); m.visible=rockOn>.01;});
 
     // estelas
     const v=Math.min(1,Math.abs(vel)/2500);
-    sMat.opacity=reduce?0:lerp(sMat.opacity,.08+v*.75,.1);
+    sMat.opacity=reduce?0:lerp(sMat.opacity,(.08+v*.75)*(1-atm),.1);
     if(!reduce){
       const speed=6+v*160, len=.1+v*6, dir=vel>=0?1:-1;
       for(let i=0;i<SN;i++){
