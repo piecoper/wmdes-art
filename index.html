@@ -263,6 +263,9 @@ footer{padding-block:6vh calc(3vh + env(safe-area-inset-bottom,0px));border-top:
 .pv-ok{margin-top:1rem;cursor:pointer;font:inherit}
 @media (max-width:520px){.pv-box{padding:1.6rem 1.2rem 1.3rem}}
 
+/* ---------- Ondas de agua ---------- */
+#ripples{position:fixed;inset:0;width:100%;height:100%;z-index:60;pointer-events:none}
+
 /* ---------- Revelado de texto ---------- */
 .rv{opacity:1;transform:none;transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
 .js .rv.pre{opacity:0;transform:translateY(28px)}
@@ -643,6 +646,79 @@ footer{padding-block:6vh calc(3vh + env(safe-area-inset-bottom,0px));border-top:
 
   /* ---------- Bucle principal ---------- */
   (function frame(){ drawHero(); drawManifest(); drawStripes(); drawMarq(); drawWork(); drawSvc(); requestAnimationFrame(frame); })();
+})();
+</script>
+<script>
+/* ---------- Ondas de agua al paso del cursor o del dedo ---------- */
+(() => {
+  if(!window.THREE || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const T=THREE, cv=document.createElement('canvas'); cv.id='ripples'; cv.setAttribute('aria-hidden','true'); document.body.appendChild(cv);
+  let R; try{ R=new T.WebGLRenderer({canvas:cv,alpha:true,premultipliedAlpha:true,antialias:false}); }catch(e){ cv.remove(); return; }
+  if(!R.capabilities.isWebGL2 && !R.extensions.get('OES_texture_half_float')){ cv.remove(); return; }
+  R.setPixelRatio(1); R.setClearColor(0,0);
+  const cam=new T.OrthographicCamera(-1,1,1,-1,0,1), quad=new T.PlaneGeometry(2,2);
+  const SCALE=innerWidth<820?3:3.5;
+  let sw=2,sh=2, A,B;
+  const mkRT=()=>new T.WebGLRenderTarget(sw,sh,{type:T.HalfFloatType,format:T.RGBAFormat,minFilter:T.LinearFilter,magFilter:T.LinearFilter,depthBuffer:false,stencilBuffer:false});
+  // simulación: R = altura, G = velocidad
+  const sim=new T.ShaderMaterial({uniforms:{t:{value:null},px:{value:new T.Vector2()},drops:{value:Array.from({length:8},()=>new T.Vector4(-9,-9,0,0))},n:{value:0},asp:{value:1}},
+    vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}`,
+    fragmentShader:`precision highp float;uniform sampler2D t;uniform vec2 px;uniform vec4 drops[8];uniform int n;uniform float asp;varying vec2 vUv;
+      void main(){vec4 c=texture2D(t,vUv);
+        float avg=(texture2D(t,vUv-vec2(px.x,0.)).r+texture2D(t,vUv+vec2(px.x,0.)).r+texture2D(t,vUv-vec2(0.,px.y)).r+texture2D(t,vUv+vec2(0.,px.y)).r)*.25;
+        c.g+=(avg-c.r)*2.;c.g*=.986;c.r+=c.g;c.r*=.9985;
+        for(int i=0;i<8;i++){if(i>=n)break;vec4 d=drops[i];vec2 q=(vUv-d.xy)*vec2(asp,1.);float k=max(0.,1.-length(q)/d.z);c.r+=(.5-cos(k*3.14159)*.5)*d.w;}
+        gl_FragColor=c;}`});
+  // render: normales del agua → brillo especular y sombra suave
+  const show=new T.ShaderMaterial({transparent:true,uniforms:{t:{value:null},px:{value:new T.Vector2()}},
+    vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}`,
+    fragmentShader:`precision highp float;uniform sampler2D t;uniform vec2 px;varying vec2 vUv;
+      void main(){float hL=texture2D(t,vUv-vec2(px.x,0.)).r,hR=texture2D(t,vUv+vec2(px.x,0.)).r,hD=texture2D(t,vUv-vec2(0.,px.y)).r,hU=texture2D(t,vUv+vec2(0.,px.y)).r;
+        vec3 nrm=normalize(vec3((hL-hR)*26.,(hD-hU)*26.,1.));
+        vec3 L=normalize(vec3(-.45,.6,.65)), V=vec3(0.,0.,1.);
+        float spec=pow(max(dot(reflect(-L,nrm),V),0.),40.);
+        float sh=dot(nrm.xy,vec2(.5,-.62));
+        vec3 col=vec3(1.)*spec + vec3(.7,.9,1.)*max(sh,0.)*1.3;
+        float a=clamp(spec*.95+max(sh,0.)*1.05+max(-sh,0.)*.5,0.,.85);
+        col=mix(vec3(.01,.04,.08),col,clamp((spec+max(sh,0.))*3.,0.,1.));
+        float gm=clamp(length(nrm.xy)*1.6,0.,1.);
+        col=mix(col,vec3(.45,.8,1.),gm*.35*(1.-clamp((spec+max(sh,0.))*3.,0.,1.)));
+        a=clamp(a+gm*.28,0.,.88);
+        gl_FragColor=vec4(col*a,a);}`});
+  const S1=new T.Scene(), S2=new T.Scene(); S1.add(new T.Mesh(quad,sim)); S2.add(new T.Mesh(quad,show));
+  function resize(){ R.setSize(innerWidth,innerHeight,false); sw=Math.max(2,Math.round(innerWidth/SCALE)); sh=Math.max(2,Math.round(innerHeight/SCALE));
+    if(A){A.dispose();B.dispose();} A=mkRT(); B=mkRT(); R.setRenderTarget(A); R.clear(); R.setRenderTarget(B); R.clear(); R.setRenderTarget(null);
+    sim.uniforms.px.value.set(1/sw,1/sh); show.uniforms.px.value.set(1/sw,1/sh); sim.uniforms.asp.value=innerWidth/innerHeight; }
+  resize(); addEventListener('resize',resize);
+  // gotas
+  const queue=[]; let lastX=null,lastY=null,active=0;
+  function drop(x,y,rad,str){ queue.push([x/innerWidth,1-y/innerHeight,rad,str]); if(queue.length>8) queue.shift(); active=performance.now(); }
+  function trail(x,y,str){
+    if(lastX===null){lastX=x;lastY=y;}
+    const dx=x-lastX, dy=y-lastY, dist=Math.hypot(dx,dy); if(dist<6) return;
+    const steps=Math.min(4,Math.ceil(dist/26)), sp=Math.min(1,dist/40);
+    for(let i=1;i<=steps;i++) drop(lastX+dx*i/steps,lastY+dy*i/steps,.018,str*(.35+.65*sp));
+    lastX=x; lastY=y;
+  }
+  addEventListener('pointermove',e=>{ if(e.pointerType==='mouse') trail(e.clientX,e.clientY,.07); },{passive:true});
+  addEventListener('pointerdown',e=>{ drop(e.clientX,e.clientY,.055,.45); lastX=e.clientX; lastY=e.clientY; },{passive:true});
+  addEventListener('touchstart',e=>{ const t=e.touches[0]; if(t){ lastX=t.clientX; lastY=t.clientY; } },{passive:true});
+  addEventListener('touchmove',e=>{ const t=e.touches[0]; if(t) trail(t.clientX,t.clientY,.1); },{passive:true});
+  document.addEventListener('mouseleave',()=>{lastX=null;});
+  // bucle (se detiene cuando el agua queda en calma)
+  let cleared=true;
+  (function loop(){
+    requestAnimationFrame(loop);
+    if(performance.now()-active>9000){ if(!cleared){ R.setRenderTarget(null); R.clear(); cleared=true; } return; }
+    cleared=false;
+    for(let it=0;it<2;it++){
+      const n=it===0?queue.length:0; sim.uniforms.n.value=n;
+      for(let i=0;i<8;i++){ const q=queue[i]; sim.uniforms.drops.value[i].set(q?q[0]:-9,q?q[1]:-9,q?q[2]:0,q?q[3]:0); }
+      sim.uniforms.t.value=A.texture; R.setRenderTarget(B); R.render(S1,cam); const tmp=A; A=B; B=tmp;
+    }
+    queue.length=0;
+    show.uniforms.t.value=A.texture; R.setRenderTarget(null); R.clear(); R.render(S2,cam);
+  })();
 })();
 </script>
 </body>
