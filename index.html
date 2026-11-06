@@ -847,6 +847,64 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
       fx.strokeStyle=g;fx.lineWidth=3;fx.beginPath();fx.moveTo(tx,ty);fx.lineTo(x,y);fx.stroke();const r=fx.createRadialGradient(x,y,0,x,y,26);r.addColorStop(0,`rgba(255,255,255,${k})`);r.addColorStop(.3,`rgba(255,180,90,${.7*k})`);r.addColorStop(1,'rgba(255,90,30,0)');fx.fillStyle=r;fx.beginPath();fx.arc(x,y,26,0,7);fx.fill();}
     function drawCloud(img,x,y,ww,a){if(a<=0)return;fx.globalAlpha=Math.min(1,a);const hh=ww*img.height/img.width;fx.drawImage(img,x-ww/2,y-hh/2,ww,hh);fx.globalAlpha=1;}
     function leaf(x,y,sz,rot,c,a){if(a<=0)return;fx.save();fx.translate(x,y);fx.rotate(rot);fx.globalAlpha=a;fx.fillStyle=c;fx.beginPath();fx.ellipse(0,0,sz,sz*.45,0,0,7);fx.fill();fx.strokeStyle='rgba(0,0,0,.25)';fx.beginPath();fx.moveTo(-sz,0);fx.lineTo(sz,0);fx.stroke();fx.restore();}
+    /* Drones diminutos: sprites pre-renderizados (4 fases de hélice) */
+    const DR=96, droneFrames=[0,1,2,3].map(ph=>{
+      const c=document.createElement('canvas'); c.width=c.height=DR; const x=c.getContext('2d'); const m=DR/2;
+      x.translate(m,m);
+      const arm=DR*.3, sq=.62; // vista 3/4: eje vertical aplastado
+      const motors=[[-arm,-arm*sq],[arm,-arm*sq],[-arm,arm*sq],[arm,arm*sq]];
+      // brillo inferior
+      let g=x.createRadialGradient(0,DR*.12,0,0,DR*.12,DR*.42); g.addColorStop(0,'rgba(86,208,255,.28)'); g.addColorStop(1,'rgba(86,208,255,0)'); x.fillStyle=g; x.beginPath(); x.ellipse(0,DR*.12,DR*.42,DR*.24,0,0,7); x.fill();
+      // brazos
+      x.lineCap='round'; motors.forEach(([mx,my])=>{x.strokeStyle='#1a1f27';x.lineWidth=DR*.075;x.beginPath();x.moveTo(0,0);x.lineTo(mx,my);x.stroke();x.strokeStyle='rgba(140,160,185,.35)';x.lineWidth=DR*.02;x.beginPath();x.moveTo(0,-DR*.01);x.lineTo(mx,my-DR*.012);x.stroke();});
+      // motores y hélices
+      motors.forEach(([mx,my],i)=>{
+        const r=DR*.2;
+        const pg=x.createRadialGradient(mx,my,r*.2,mx,my,r); pg.addColorStop(0,'rgba(210,235,255,.10)'); pg.addColorStop(.85,'rgba(210,235,255,.22)'); pg.addColorStop(1,'rgba(210,235,255,0)');
+        x.fillStyle=pg; x.beginPath(); x.ellipse(mx,my,r,r*sq,0,0,7); x.fill();
+        x.strokeStyle='rgba(225,240,255,.55)'; x.lineWidth=DR*.018; const a=ph*Math.PI/4+i*.7;
+        for(let b=0;b<2;b++){const aa=a+b*Math.PI; x.beginPath(); x.moveTo(mx-Math.cos(aa)*r*.9,my-Math.sin(aa)*r*.9*sq); x.lineTo(mx+Math.cos(aa)*r*.9,my+Math.sin(aa)*r*.9*sq); x.stroke();}
+        x.fillStyle='#0d1015'; x.beginPath(); x.ellipse(mx,my,DR*.045,DR*.035,0,0,7); x.fill();
+        x.fillStyle='#5b6573'; x.beginPath(); x.arc(mx,my-DR*.006,DR*.015,0,7); x.fill();
+      });
+      // cuerpo
+      const bw=DR*.3, bh=DR*.2; g=x.createLinearGradient(0,-bh/2,0,bh/2); g.addColorStop(0,'#3a4351'); g.addColorStop(.45,'#1a1f28'); g.addColorStop(1,'#07090d');
+      x.fillStyle=g; x.beginPath(); x.roundRect?x.roundRect(-bw/2,-bh/2,bw,bh,bh*.45):x.rect(-bw/2,-bh/2,bw,bh); x.fill();
+      x.strokeStyle='rgba(170,195,220,.5)'; x.lineWidth=DR*.012; x.beginPath(); x.moveTo(-bw*.35,-bh*.38); x.lineTo(bw*.35,-bh*.38); x.stroke();
+      // cámara frontal y franja de luz
+      x.fillStyle='#04060a'; x.beginPath(); x.arc(0,bh*.42,DR*.038,0,7); x.fill(); x.fillStyle='#56d0ff'; x.beginPath(); x.arc(DR*.008,bh*.4,DR*.014,0,7); x.fill();
+      x.fillStyle='rgba(86,208,255,.9)'; x.fillRect(-bw*.28,-DR*.006,bw*.56,DR*.014);
+      return c;
+    });
+    const drones=[...Array(64)].map((_,i)=>{const side=Math.floor(rnd()*4); const e=rnd();
+      return {gx:i%8,gy:Math.floor(i/8),p:rnd()*6.28,
+        ox:side===0?-.1:side===1?1.1:e, oy:side===2?-.12:side===3?1.12:e,          // origen fuera de pantalla
+        hx:.55+rnd()*.42, hy:.12+rnd()*.66,                                      // patrulla (lado libre)
+        dx:Math.cos(rnd()*6.28), dy:Math.sin(rnd()*6.28), sp:.8+rnd()*.9};       // dispersión
+    });
+    function drawDrone(x,y,size,tilt,time,i,a,lead){
+      if(a<=0.01||x<-60||y<-60||x>w+60||y>h+60) return;
+      const fr=droneFrames[(Math.floor(time*28)+i)&3];
+      fx.save(); fx.globalAlpha=a; fx.translate(x,y); fx.rotate(tilt); fx.drawImage(fr,-size/2,-size/2,size,size);
+      // LED: frente cian, cola naranja parpadeante
+      const blink=((time*2.2+i*.13)%1)<.18;
+      fx.globalCompositeOperation='lighter';
+      let g=fx.createRadialGradient(0,size*.14,0,0,size*.14,size*.16); g.addColorStop(0,'rgba(140,230,255,.95)'); g.addColorStop(1,'rgba(86,208,255,0)'); fx.fillStyle=g; fx.beginPath(); fx.arc(0,size*.14,size*.16,0,7); fx.fill();
+      if(blink||lead){g=fx.createRadialGradient(0,-size*.12,0,0,-size*.12,size*.2); g.addColorStop(0,'rgba(255,190,110,1)'); g.addColorStop(.4,'rgba(255,110,40,.6)'); g.addColorStop(1,'rgba(255,80,20,0)'); fx.fillStyle=g; fx.beginPath(); fx.arc(0,-size*.12,size*.2,0,7); fx.fill();}
+      fx.restore();
+    }
+    // pose de un dron según el avance T de la escena QR
+    function droneAt(d,i,T,time){
+      const sz=w<981?18:26, sp=w<981?22:30, gx=w/2+(d.gx-3.5)*sp, gy=h*.5+(d.gy-3.5)*sp;
+      const k1=ease(cl((T-.06-d.p*.012)/.4));                         // llegada a la cuadrícula
+      let x=lerp(d.ox*w,gx,k1), y=lerp(d.oy*h,gy,k1), tilt=(1-k1)*Math.atan2(gy-d.oy*h,gx-d.ox*w)*.12;
+      const k2=ease(cl((T-.62)/.18));                                  // suben a patrullar
+      if(k2>0){const hx=d.hx*w+Math.sin(time*.9+d.p)*14, hy=d.hy*h+Math.cos(time*1.3+d.p)*10; x=lerp(x,hx,k2); y=lerp(y,hy,k2); tilt=Math.sin(time*1.1+d.p)*.12;}
+      const k3=cl((T-.82)/.18);                                        // dispersión final
+      if(k3>0){const e=k3*k3; x+=d.dx*e*w*.9*d.sp; y+=d.dy*e*h*.9*d.sp; tilt=Math.atan2(d.dy,d.dx)*.25;}
+      const bob=Math.sin(time*3+d.p)*1.5*(k1>.98&&k2<.02?1:0);
+      return [x,y+bob,sz,tilt,1-cl((k3-.75)*4)];
+    }
     function fly(x,y,a){if(a<=0)return;const r=fx.createRadialGradient(x,y,0,x,y,9);r.addColorStop(0,`rgba(255,240,170,${a})`);r.addColorStop(.4,`rgba(255,190,80,${a*.5})`);r.addColorStop(1,'rgba(255,150,40,0)');fx.fillStyle=r;fx.beginPath();fx.arc(x,y,9,0,7);fx.fill();}
     const bez=(a,b,c,t)=>(1-t)*(1-t)*a+2*(1-t)*t*b+t*t*c;
 
@@ -899,15 +957,15 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
           case 'leaves':{
             if(T>.1&&T<.7){leafs.forEach(l=>{const k=ease(cl((T-.12-l.r*.12)/.38)),ang=l.a+(1-k)*4,rad=lerp(w*.6,40+l.r*80,k),x=cx+Math.cos(ang)*rad+(1-k)*w*.3,y=cy+Math.sin(ang)*rad*.5;leaf(x,y,l.s,l.sp+time*3,l.c,1-cl((T-.58)/.12));});}
             break;}
-          case 'fireflies':{
-            if(T>.08&&T<.7){flies.forEach((f,i)=>{const gx=i%9,gy=Math.floor(i/9)%9,k=ease(cl((T-.12-f.p*.02)/.36)),x=lerp(f.x*w,cx+(gx-4)*16,k)+Math.sin(time*2+f.p)*(1-k)*20,y=lerp(f.y*h,cy+(gy-4)*16,k)+Math.cos(time*2+f.p)*(1-k)*20;fly(x,y,(1-cl((T-.58)/.12))*(.6+.4*Math.sin(time*5+f.p)));});}
+          case 'fireflies':{ // drones: llegan, forman la cuadrícula, patrullan y se dispersan
+            if(T>.04&&T<1.02){drones.forEach((d,i)=>{const q=droneAt(d,i,T,time); drawDrone(q[0],q[1],q[2],q[3],time,i,q[4],i===0);});}
             break;}
         }
         if(T>.86&&T<1.05){const k=cl((T-.86)/.14);
           if(sc.ex==='cloud') drawCloud(bigCloud,lerp(w*1.3,cx-w*.1,ease(Math.min(1,k*1.4)))-ease(k)*w*.3,cy,w*.75,Math.min(1,k*2)*(1-cl((k-.8)*5)));
           if(sc.ex==='rain'&&!reduce){fx.strokeStyle='rgba(200,225,255,.7)';fx.lineWidth=2;fx.beginPath();drops.forEach(d=>{const y=((d.y+k*1.6)%1)*h,x=d.x*w;fx.moveTo(x,y);fx.lineTo(x+3,y+26);});fx.stroke();}
           if(sc.ex==='leaves') leafs.forEach(l=>{const x=lerp(w*1.1,-w*.2,cl(k*1.2-l.r*.2)),y=cy+Math.sin(l.a+k*6)*h*.3;leaf(x,y,l.s,l.sp+k*20,l.c,1);});
-          if(sc.ex==='fireflies') flies.forEach(f=>{const x=cx+(f.x-.5)*w*.5*(.3+k),y=cy+(f.y-.5)*h*.6*(.3+k);fly(x,y,1-k);});
+          if(sc.ex==='fireflies') drones.forEach((d,i)=>{const r=Math.min(w,h)*(.06+.9*k*k*d.sp), a=Math.atan2(d.dy,d.dx); drawDrone(cx+Math.cos(a)*r,cy+Math.sin(a)*r*.75,w<981?14:18,a*.25,time,i,Math.min(1,k*4)*(1-cl((k-.8)*5)),false);});
         }
       });
       if(window.__placePlanet){ if(p0) window.__placePlanet(0,...p0); else window.__placePlanet(0); if(p1) window.__placePlanet(1,...p1); else window.__placePlanet(1); }
