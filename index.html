@@ -657,16 +657,18 @@ footer{padding-block:6vh calc(3vh + env(safe-area-inset-bottom,0px));border-top:
   if(!R.capabilities.isWebGL2 && !R.extensions.get('OES_texture_half_float')){ cv.remove(); return; }
   R.setPixelRatio(1); R.setClearColor(0,0);
   const cam=new T.OrthographicCamera(-1,1,1,-1,0,1), quad=new T.PlaneGeometry(2,2);
-  const SCALE=innerWidth<820?3:3.5;
+  const MOB=innerWidth<820||matchMedia('(pointer:coarse)').matches, SCALE=MOB?4:3.5;
   let sw=2,sh=2, A,B;
-  const mkRT=()=>new T.WebGLRenderTarget(sw,sh,{type:T.HalfFloatType,format:T.RGBAFormat,minFilter:T.LinearFilter,magFilter:T.LinearFilter,depthBuffer:false,stencilBuffer:false});
+  const mkRT=()=>new T.WebGLRenderTarget(sw,sh,{type:T.HalfFloatType,format:T.RGBAFormat,minFilter:T.NearestFilter,magFilter:T.NearestFilter,depthBuffer:false,stencilBuffer:false});
   // simulación: R = altura, G = velocidad
   const sim=new T.ShaderMaterial({uniforms:{t:{value:null},px:{value:new T.Vector2()},drops:{value:Array.from({length:8},()=>new T.Vector4(-9,-9,0,0))},n:{value:0},asp:{value:1}},
     vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}`,
     fragmentShader:`precision highp float;uniform sampler2D t;uniform vec2 px;uniform vec4 drops[8];uniform int n;uniform float asp;varying vec2 vUv;
       void main(){vec4 c=texture2D(t,vUv);
         float avg=(texture2D(t,vUv-vec2(px.x,0.)).r+texture2D(t,vUv+vec2(px.x,0.)).r+texture2D(t,vUv-vec2(0.,px.y)).r+texture2D(t,vUv+vec2(0.,px.y)).r)*.25;
-        c.g+=(avg-c.r)*2.;c.g*=.986;c.r+=c.g;c.r*=.9985;
+        c.g+=(avg-c.r)*2.;c.g*=.975;c.r+=c.g;c.r*=.993;
+        c.r=clamp(c.r,-.6,.6);c.g=clamp(c.g,-.6,.6);
+        if(abs(c.r)<.0025&&abs(c.g)<.0025){c.r=0.;c.g=0.;}
         for(int i=0;i<8;i++){if(i>=n)break;vec4 d=drops[i];vec2 q=(vUv-d.xy)*vec2(asp,1.);float k=max(0.,1.-length(q)/d.z);c.r+=(.5-cos(k*3.14159)*.5)*d.w;}
         gl_FragColor=c;}`});
   // render: normales del agua → brillo especular y sombra suave
@@ -679,11 +681,12 @@ footer{padding-block:6vh calc(3vh + env(safe-area-inset-bottom,0px));border-top:
         float spec=pow(max(dot(reflect(-L,nrm),V),0.),40.);
         float sh=dot(nrm.xy,vec2(.5,-.62));
         vec3 col=vec3(1.)*spec + vec3(.7,.9,1.)*max(sh,0.)*1.3;
-        float a=clamp(spec*.95+max(sh,0.)*1.05+max(-sh,0.)*.5,0.,.85);
+        float slope=smoothstep(.03,.25,length(vec2(hL-hR,hD-hU))*13.);
+        float a=clamp(spec*.95+max(sh,0.)*1.05+max(-sh,0.)*.5,0.,.85)*slope;
         col=mix(vec3(.01,.04,.08),col,clamp((spec+max(sh,0.))*3.,0.,1.));
-        float gm=clamp(length(nrm.xy)*1.6,0.,1.);
+        float gm=smoothstep(.05,.6,length(nrm.xy));
         col=mix(col,vec3(.45,.8,1.),gm*.35*(1.-clamp((spec+max(sh,0.))*3.,0.,1.)));
-        a=clamp(a+gm*.28,0.,.88);
+        a=clamp(a+gm*.28*slope,0.,.88);
         gl_FragColor=vec4(col*a,a);}`});
   const S1=new T.Scene(), S2=new T.Scene(); S1.add(new T.Mesh(quad,sim)); S2.add(new T.Mesh(quad,show));
   function resize(){ R.setSize(innerWidth,innerHeight,false); sw=Math.max(2,Math.round(innerWidth/SCALE)); sh=Math.max(2,Math.round(innerHeight/SCALE));
@@ -700,16 +703,16 @@ footer{padding-block:6vh calc(3vh + env(safe-area-inset-bottom,0px));border-top:
     for(let i=1;i<=steps;i++) drop(lastX+dx*i/steps,lastY+dy*i/steps,.018,str*(.35+.65*sp));
     lastX=x; lastY=y;
   }
-  addEventListener('pointermove',e=>{ if(e.pointerType==='mouse') trail(e.clientX,e.clientY,.07); },{passive:true});
+  addEventListener('pointermove',e=>{ if(e.pointerType==='mouse') trail(e.clientX,e.clientY,.06); },{passive:true});
   addEventListener('pointerdown',e=>{ drop(e.clientX,e.clientY,.055,.45); lastX=e.clientX; lastY=e.clientY; },{passive:true});
   addEventListener('touchstart',e=>{ const t=e.touches[0]; if(t){ lastX=t.clientX; lastY=t.clientY; } },{passive:true});
-  addEventListener('touchmove',e=>{ const t=e.touches[0]; if(t) trail(t.clientX,t.clientY,.1); },{passive:true});
+  addEventListener('touchmove',e=>{ const t=e.touches[0]; if(t) trail(t.clientX,t.clientY,.06); },{passive:true});
   document.addEventListener('mouseleave',()=>{lastX=null;});
   // bucle (se detiene cuando el agua queda en calma)
   let cleared=true;
   (function loop(){
     requestAnimationFrame(loop);
-    if(performance.now()-active>9000){ if(!cleared){ R.setRenderTarget(null); R.clear(); cleared=true; } return; }
+    if(performance.now()-active>(MOB?4500:7000)){ if(!cleared){ R.setRenderTarget(A); R.clear(); R.setRenderTarget(B); R.clear(); R.setRenderTarget(null); R.clear(); cleared=true; } return; }
     cleared=false;
     for(let it=0;it<2;it++){
       const n=it===0?queue.length:0; sim.uniforms.n.value=n;
