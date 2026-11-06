@@ -341,6 +341,36 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
 }
 @media (prefers-reduced-motion:reduce){.mod.on h3{animation:none}.pj-wave i{animation:none}}
 
+/* WhatsApp flotante */
+.wa-fab{position:fixed;left:max(18px,env(safe-area-inset-left,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;align-items:center;gap:.55rem;
+  padding:.7rem 1.05rem .7rem .8rem;background:#25d366;color:#04140a;text-decoration:none;border-radius:999px;font-family:var(--f-mono);font-size:.74rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  box-shadow:0 10px 30px -8px rgba(37,211,102,.6),0 0 0 1px rgba(255,255,255,.15) inset;transition:transform .2s,box-shadow .2s}
+.wa-fab svg{width:24px;height:24px}
+.wa-fab::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 0 0 0 rgba(37,211,102,.55);animation:waPulse 2.4s ease-out infinite;pointer-events:none}
+.wa-fab:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 14px 36px -8px rgba(37,211,102,.75)}
+@keyframes waPulse{0%{box-shadow:0 0 0 0 rgba(37,211,102,.5)}70%{box-shadow:0 0 0 16px rgba(37,211,102,0)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}}
+@media (max-width:760px){.wa-fab{left:auto;right:max(16px,env(safe-area-inset-right,0px));padding:.85rem}.wa-fab span{display:none}.wa-fab svg{width:28px;height:28px}}
+@media (prefers-reduced-motion:reduce){.wa-fab::after{animation:none}}
+
+/* Aviso de privacidad */
+.legal{font-size:.78rem;color:var(--steel);margin:.2rem 0 0;line-height:1.5}
+.legal a,footer a{color:var(--crystal)}
+footer a{text-decoration:none}
+footer a:hover{text-decoration:underline}
+.pv{position:fixed;inset:0;z-index:70;background:rgba(2,4,9,.78);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;
+  padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.pv[hidden]{display:none}
+.pv-box{position:relative;width:min(760px,100%);max-height:100%;overflow:auto;overscroll-behavior:contain;background:var(--hull);border:1px solid var(--line);padding:2rem 2rem 1.6rem}
+.pv-box h2{font-size:clamp(1.8rem,4vw,2.6rem);text-transform:uppercase;margin:.7rem 0 1rem}
+.pv-box h3{font-family:var(--f-display);font-size:1rem;text-transform:uppercase;letter-spacing:.04em;color:var(--crystal);margin:1.4rem 0 .4rem}
+.pv-box p{margin:0 0 .7rem;color:#c3d3e4;font-size:.95rem;max-width:68ch}
+.pv-simple{border:1px solid var(--line);background:rgba(86,208,255,.05);padding:.2rem 1rem .5rem}
+.pv-x{position:absolute;top:12px;right:12px;width:40px;height:40px;background:transparent;border:1px solid var(--line);color:var(--ice);font-size:1rem;cursor:pointer}
+.pv-x:hover{border-color:var(--crystal);color:var(--crystal)}
+#pvOk{margin-top:1rem}
+@media (max-width:520px){.pv-box{padding:1.5rem 1.1rem 1.2rem}}
+html.astro .pv, html.astro .pv *{cursor:auto!important}
+
 /* Cursor asteroide */
 #cursor{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
 @media (pointer:fine){html.astro,html.astro *{cursor:none!important}}
@@ -506,10 +536,14 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
       <div class="head"><span class="m">Misión 04 · 2026</span><span>Alt 10 200 km</span></div>
       <h2>Atlas Montacargas 3D</h2>
       <p class="sub">Un montacargas que se separa pieza por pieza</p>
-      <p>Plataforma educativa en 3D: giras el equipo, tocas una pieza y aparece su ficha con qué hace, dónde está y con qué se relaciona. Incluye despiece, simulador de horquillas y mástil, cableado y sonidos de falla.</p>
+      <p>Plataforma educativa en 3D: giras el equipo, tocas una pieza y aparece su ficha con qué hace, dónde está y con qué se relaciona. Incluye despiece animado, simulador de manejo con estaciones y evaluación, cableado y sonidos de falla.</p>
+      <div class="tabs" role="tablist" aria-label="Videos de Atlas" data-vid="atlasVid" data-cap="atlasCap">
+        <button role="tab" aria-selected="true" data-src="assets/atlas-despiece.mp4" data-poster="assets/atlas-despiece.jpg" data-cap="Despiece 3D · montacargas de gas LP">Despiece 3D</button>
+        <button role="tab" aria-selected="false" data-src="assets/atlas-simulador.mp4" data-poster="assets/atlas-simulador.jpg" data-cap="Simulador de manejo · estaciones y evaluación">Simulador de manejo</button>
+      </div>
       <figure class="media">
-        <img src="assets/atlas.jpg" alt="Pantalla de Atlas Montacargas 3D: catálogo de piezas, montacargas de gas LP en 3D y ficha del cilindro de gas LP" loading="lazy" width="1618" height="842">
-        <figcaption>Montacargas de gas LP · ficha de pieza</figcaption>
+        <video id="atlasVid" class="lazyvid" data-src="assets/atlas-despiece.mp4" poster="assets/atlas-despiece.jpg" muted loop playsinline preload="none"></video>
+        <figcaption id="atlasCap">Despiece 3D · montacargas de gas LP</figcaption>
       </figure>
       <dl class="facts">
         <div><dt>Piezas</dt><dd>297</dd></div>
@@ -596,6 +630,7 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
           <a class="btn ghost" id="waLink" href="https://wa.me/525535802844" target="_blank" rel="noopener" hidden>Abrir WhatsApp ↗</a>
           <span class="status" id="fStatus" role="status"></span>
         </div>
+        <p class="full legal">Al preparar el mensaje aceptas nuestro <a href="#privacidad" class="pv-link">Aviso de privacidad</a>. El formulario no guarda tus datos: el mensaje solo se envía si tú lo mandas desde WhatsApp.</p>
       </form>
       <dl class="contact">
         <div><dt>WhatsApp / Teléfono</dt><dd id="cPhone">+52 55 3580 2844</dd><button type="button" data-copy="cPhone">Copiar</button></div>
@@ -609,8 +644,43 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
 
 <footer>
   <span>© 2026 WMDES · Web Masters Designs</span>
+  <a href="#privacidad" class="pv-link">Aviso de privacidad</a>
   <span>wmdes.art · Desarrollamos tus ideas con impacto</span>
 </footer>
+
+<a class="wa-fab" href="https://wa.me/525535802844?text=Hola%20WMDES%2C%20me%20interesa%20desarrollar%20un%20proyecto." target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.8-1.4.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4 5.2 5.2 0 0 0 3.2.7 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg><span>WhatsApp</span></a>
+
+<div class="pv" id="privacidad" hidden>
+  <div class="pv-box" role="dialog" aria-modal="true" aria-labelledby="pvT" data-lenis-prevent>
+    <button class="pv-x" type="button" id="pvClose" aria-label="Cerrar aviso de privacidad">✕</button>
+    <div class="eyebrow"><span>Legal</span><span>Última actualización: 5 de noviembre de 2026</span></div>
+    <h2 id="pvT">Aviso de privacidad</h2>
+    <section class="pv-simple">
+      <h3>Aviso simplificado</h3>
+      <p>WMDES (Web Masters Designs) es responsable del tratamiento de los datos personales que nos compartes. Los usamos para responder tus solicitudes, cotizar y dar seguimiento a tu proyecto. Puedes ejercer tus derechos de acceso, rectificación, cancelación y oposición (ARCO) o revocar tu consentimiento escribiendo a <b>piecoper@gmail.com</b>. Abajo encontrarás el aviso integral.</p>
+    </section>
+    <h3>1. Responsable</h3>
+    <p>WMDES (Web Masters Designs), México. Contacto para temas de privacidad: <b>piecoper@gmail.com</b> · WhatsApp <b>+52 55 3580 2844</b>.</p>
+    <h3>2. Datos personales que recabamos</h3>
+    <p>Datos de identificación y contacto: nombre, teléfono o WhatsApp y correo electrónico, además de la descripción del proyecto que decidas compartirnos. No solicitamos datos personales sensibles ni datos financieros a través de este sitio.</p>
+    <h3>3. Cómo los obtenemos</h3>
+    <p>Cuando nos escribes por WhatsApp, correo o Facebook. El formulario de este sitio no envía ni guarda información en ningún servidor: solo prepara un mensaje que tú decides enviar desde tu propio WhatsApp.</p>
+    <h3>4. Finalidades</h3>
+    <p><b>Necesarias:</b> atender y responder tus solicitudes, elaborar cotizaciones, dar seguimiento a tu proyecto y prestar los servicios que contrates.</p>
+    <p><b>Adicionales:</b> enviarte información sobre nuevos servicios. Si no deseas recibirla, escríbenos a piecoper@gmail.com; tu negativa no afecta la atención que te damos.</p>
+    <h3>5. Transferencias y encargados</h3>
+    <p>No vendemos ni transferimos tus datos a terceros sin tu consentimiento, salvo en los casos que permite la ley. Para operar usamos servicios de mensajería (WhatsApp), correo electrónico y alojamiento web, que tratan la información conforme a sus propias políticas.</p>
+    <h3>6. Derechos ARCO y revocación del consentimiento</h3>
+    <p>Puedes solicitar el acceso, rectificación, cancelación u oposición al tratamiento de tus datos, o revocar tu consentimiento, enviando un correo a piecoper@gmail.com con tu nombre, el medio para responderte, un documento que acredite tu identidad y la descripción clara de lo que solicitas. Te responderemos en los plazos que establece la ley.</p>
+    <h3>7. Cookies y tecnologías de rastreo</h3>
+    <p>Este sitio no usa cookies propias, de analítica ni de publicidad. Para mostrar tipografías y componentes carga recursos de Google Fonts y jsDelivr, servicios que pueden registrar datos técnicos como tu dirección IP conforme a sus propias políticas.</p>
+    <h3>8. Cambios a este aviso</h3>
+    <p>Cualquier cambio se publicará en esta misma página con su fecha de actualización.</p>
+    <h3>9. Autoridad</h3>
+    <p>Si consideras que tu derecho a la protección de datos personales ha sido vulnerado, puedes acudir a la Secretaría Anticorrupción y Buen Gobierno, autoridad garante conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares publicada en el Diario Oficial de la Federación el 20 de marzo de 2025.</p>
+    <button class="btn" type="button" id="pvOk">Entendido</button>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
@@ -623,8 +693,8 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
 
   /* ---------- Scroll con inercia ---------- */
   let lenis=null;
-  if(!reduce&&window.Lenis){ try{ lenis=new Lenis({lerp:.075,wheelMultiplier:.85,smoothWheel:true}); (function lr(t){lenis.raf(t);requestAnimationFrame(lr);})(0);
-    document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const id=a.getAttribute('href'); if(id==='#quienes') return; const t=document.querySelector(id); if(t){e.preventDefault(); lenis.scrollTo(t,{offset:id==='#inicio'?0:innerHeight*.05,duration:2.2});}}));
+  if(!reduce&&window.Lenis){ try{ lenis=new Lenis({lerp:.075,wheelMultiplier:.85,smoothWheel:true}); window.__lenisRef=lenis; (function lr(t){lenis.raf(t);requestAnimationFrame(lr);})(0);
+    document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const id=a.getAttribute('href'); if(id==='#quienes'||id==='#privacidad') return; const t=document.querySelector(id); if(t){e.preventDefault(); lenis.scrollTo(t,{offset:id==='#inicio'?0:innerHeight*.05,duration:2.2});}}));
   }catch(e){lenis=null;} }
 
   /* ---------- Keyframes por etapa ---------- */
@@ -813,6 +883,18 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
+  })();
+
+  /* ---------- Aviso de privacidad ---------- */
+  (function privacy(){
+    const pv=document.getElementById('privacidad'); if(!pv) return; let last=null;
+    const open=e=>{ if(e) e.preventDefault(); last=document.activeElement; pv.hidden=false; document.documentElement.style.overflow='hidden'; if(window.__lenisRef) window.__lenisRef.stop(); document.getElementById('pvClose').focus(); };
+    const close=()=>{ pv.hidden=true; document.documentElement.style.overflow=''; if(window.__lenisRef) window.__lenisRef.start(); if(last&&last.focus) last.focus(); };
+    document.querySelectorAll('a[href="#privacidad"]').forEach(a=>a.addEventListener('click',e=>{e.stopImmediatePropagation();open(e);},true));
+    document.getElementById('pvClose').addEventListener('click',close); document.getElementById('pvOk').addEventListener('click',close);
+    pv.addEventListener('click',e=>{ if(e.target===pv) close(); });
+    addEventListener('keydown',e=>{ if(e.key==='Escape'&&!pv.hidden) close(); });
+    if(location.hash==='#privacidad') open();
   })();
 
   /* ---------- Conversación del agente: resalta una línea a la vez ---------- */
