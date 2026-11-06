@@ -75,7 +75,8 @@ a{color:var(--crystal)}
 
 /* ---------- Estructura ---------- */
 main{position:relative;z-index:5;max-width:1320px;margin:0 auto}
-html,body,main{overflow-x:clip}
+html,body{overflow-x:clip}
+main>.stage{overflow-x:clip}
 .stage{position:relative;min-height:150vh;padding-block:22vh 10vh}
 .stage .panel{position:sticky;top:15vh}
 @media (max-width:980px){
@@ -229,6 +230,54 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
 .call .cap{font-family:var(--f-mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--steel);padding:0 .9rem .7rem}
 @media (prefers-reduced-motion:reduce){.wave i{animation:none;height:60%}}
 
+/* Entrada guiada por scroll: roca → mecha → nave */
+.intro{position:relative;height:560vh;width:100vw;margin-left:calc(50% - 50vw)}
+.intro-stick{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+#seq{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ov{position:absolute;left:max(24px,env(safe-area-inset-left,0px));right:max(24px,env(safe-area-inset-right,0px));transition:none}
+.ov-a{bottom:9vh;max-width:680px}
+.ov-a h1{font-size:var(--s4);font-weight:900;text-transform:uppercase;margin-block:1rem 1.2rem;text-shadow:0 2px 30px rgba(3,5,11,.9)}
+.ov-a h1 .l2{display:block;color:transparent;-webkit-text-stroke:1.5px var(--crystal);font-weight:700}
+.ov-a p.lead{max-width:52ch;color:#c3d3e4;font-size:1.05rem;margin:0 0 1.6rem;text-shadow:0 1px 12px rgba(3,5,11,.95)}
+.hint{margin-top:1.6rem;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--steel);display:flex;align-items:center;gap:.7rem}
+.hint i{display:block;width:1px;height:28px;background:linear-gradient(var(--crystal),transparent);animation:drop 1.6s ease-in-out infinite}
+@keyframes drop{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.ov-b{top:50%;transform:translateY(-50%);max-width:470px;opacity:0;padding:1.8rem;background:var(--panel);border:1px solid var(--line);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.ov-b h2{font-size:clamp(2rem,4vw,3rem);text-transform:uppercase;margin:.6rem 0 .8rem}
+.ov-b p{margin:0;color:#c3d3e4}
+.ov-b .facts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ov-b .facts dd{font-size:1.05rem}
+.ov-c{bottom:12vh;text-align:center;opacity:0}
+.ov-c h2{font-size:clamp(2.6rem,8vw,6.5rem);text-transform:uppercase;font-weight:900;letter-spacing:.02em;text-shadow:0 0 40px rgba(86,208,255,.45)}
+.ov-c p{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--crystal);margin:.8rem 0 0}
+.introbar{position:absolute;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(240px,50vw);height:2px;background:var(--line)}
+.introbar b{display:block;height:100%;width:0;background:var(--crystal)}
+@media (max-width:980px){
+  .ov-a{bottom:8vh}
+  .ov-a::before,.ov-b::before{content:"";position:absolute;inset:-40vh -40px -10vh;background:linear-gradient(180deg,transparent,rgba(3,5,11,.92) 45%);z-index:-1}
+  .ov-b{top:auto;bottom:7vh;transform:none;padding:1.3rem}
+  .ov-b::before{display:none}
+}
+@media (prefers-reduced-motion:reduce){.hint i{animation:none}}
+
+/* Activos con QR */
+.qrdemo{display:grid;grid-template-columns:150px minmax(0,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:1.2rem}
+.qrdemo>div{background:var(--hull);padding:.9rem;min-width:0}
+.qrbox{position:relative;display:flex;flex-direction:column;gap:.5rem;align-items:center;justify-content:center}
+.qrbox svg{width:118px;height:118px;display:block}
+.qrbox .scan{position:absolute;left:16px;right:16px;top:18px;height:2px;background:var(--beacon);box-shadow:0 0 12px var(--beacon);animation:scan2 2.4s ease-in-out infinite}
+@keyframes scan2{50%{top:128px}}
+.qrbox small{font-family:var(--f-mono);font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--steel);text-align:center}
+.asset dl{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:.3rem .8rem;font-size:.88rem}
+.asset dt{font-family:var(--f-mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--steel);padding-top:.2rem}
+.asset dd{margin:0;color:var(--ice);font-variant-numeric:tabular-nums}
+.asset dd.ok{color:#7dffa1}
+.minimap{margin-top:.7rem;border:1px solid var(--line)}
+.minimap svg{display:block;width:100%;height:auto}
+.asset .cap{font-family:var(--f-mono);font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--steel);margin-top:.4rem}
+@media (max-width:520px){.qrdemo{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.qrbox .scan{animation:none}}
+
 /* Cursor asteroide */
 #cursor{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
 @media (pointer:fine){html.astro,html.astro *{cursor:none!important}}
@@ -257,7 +306,7 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
 </header>
 
 <nav class="rail" aria-label="Descenso">
-  <a href="#inicio" data-i="0">Órbita<i></i></a>
+  <a href="#inicio" data-i="0">Inicio<i></i></a>
   <a href="#carga" data-i="1">Carga<i></i></a>
   <a href="#m-ruy" data-i="2">RUY<i></i></a>
   <a href="#m-patentes" data-i="3">MISSER<i></i></a>
@@ -265,7 +314,8 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
   <a href="#m-cmms" data-i="5">CMMS<i></i></a>
   <a href="#m-atlas" data-i="6">Atlas<i></i></a>
   <a href="#m-agentes" data-i="7">Agentes IA<i></i></a>
-  <a href="#contacto" data-i="8">Aterrizaje<i></i></a>
+  <a href="#m-qr" data-i="8">QR<i></i></a>
+  <a href="#contacto" data-i="9">Aterrizaje<i></i></a>
 </nav>
 
 <dl class="telemetry" aria-hidden="true">
@@ -275,21 +325,35 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
 </dl>
 
 <main>
-  <!-- 0 · ÓRBITA -->
-  <section class="stage hero" id="inicio" data-stage="0">
-    <div>
-      <div class="eyebrow"><span>Transmisión entrante</span><span>WMDES · Web Masters Designs</span></div>
-      <h1>Aterrizamos tus ideas.<span class="l2">Las hacemos de otro mundo.</span></h1>
-      <p class="lead">Desde hace más de una década creamos en México proyectos que no existían: control de acceso, desarrollos con patente, marcas y plataformas en 3D. Hoy regresamos con más fuerza y con inteligencia artificial a bordo: agentes telefónicos, automatización, apps y mundos 3D.</p>
-      <div class="actions">
-        <a class="btn" href="#carga">Iniciar descenso ↓</a>
-        <a class="btn ghost" href="#contacto">Cuéntanos tu idea</a>
+  <!-- 0 · ENTRADA: la roca se acerca, aparece el mecha, se vuelve nave -->
+  <section class="intro" id="inicio" data-stage="0" aria-label="Inicio">
+    <div class="intro-stick">
+      <canvas id="seq" aria-hidden="true"></canvas>
+      <div class="ov ov-a" id="ovA">
+        <div class="eyebrow"><span>Transmisión entrante</span><span>WMDES · Web Masters Designs</span></div>
+        <h1>Aterrizamos tus ideas.<span class="l2">Las hacemos de otro mundo.</span></h1>
+        <p class="lead">Software, mundos 3D, agentes con IA y control de activos. Ideas que no existían, construidas en México.</p>
+        <div class="actions">
+          <a class="btn" href="#quienes">Iniciar descenso ↓</a>
+          <a class="btn ghost" href="#contacto">Cuéntanos tu idea</a>
+        </div>
+        <div class="hint"><i></i>Desliza: algo se acerca</div>
       </div>
-      <p class="hero-note">Punto de partida: <b>384 400 km</b>, la distancia a la Luna</p>
-    </div>
-    <div class="pod">
-      <video id="heroVid" src="assets/mecha.mp4" poster="assets/mecha-poster.jpg" autoplay muted loop playsinline preload="auto" aria-label="La nave mecha WMDES emerge de un asteroide"></video>
-      <span class="tag">Nave WMDES · en línea</span>
+      <div class="ov ov-b hud" id="ovB">
+        <div class="eyebrow" id="quienes"><span>Quiénes somos</span></div>
+        <h2>Somos WMDES.</h2>
+        <p>Ingenieros, diseñadores y desarrolladores mexicanos. Desde 2012 construimos lo que todavía no existe: control de acceso, una cerradura con patente, marcas, plataformas 3D y sistemas para empresas. Hoy volvemos con inteligencia artificial a bordo.</p>
+        <dl class="facts">
+          <div><dt>Desde</dt><dd>2012</dd></div>
+          <div><dt>Patente</dt><dd>MISSER MAX</dd></div>
+          <div><dt>Módulos</dt><dd>12</dd></div>
+        </dl>
+      </div>
+      <div class="ov ov-c" id="ovC">
+        <h2>Modo nave</h2>
+        <p>Cada proyecto es un planeta · comienza el descenso</p>
+      </div>
+      <div class="introbar" aria-hidden="true"><b id="introBar"></b></div>
     </div>
   </section>
 
@@ -318,8 +382,8 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
         <div><code>MÓDULO H</code><h3>Simuladores y capacitación</h3><p>Entrenamiento interactivo para que tu personal aprenda antes de tocar el equipo.</p></div>
         <div><code>MÓDULO I</code><h3>Tableros y datos</h3><p>Indicadores en tiempo real para decidir con números, no con suposiciones.</p></div>
         <div><code>MÓDULO J</code><h3>Control de acceso y seguridad</h3><p>Integración de hardware, sensores y comunicaciones, nuestra raíz desde RUY.</p></div>
-        <div><code>MÓDULO K</code><h3>Web, tienda y marca</h3><p>Sitios, comercio en línea, menús interactivos, identidad y publicaciones.</p></div>
-        <div><code>MÓDULO L</code><h3>Animación y video</h3><p>Presentaciones animadas en 3D desde antes de que fuera común.</p></div>
+        <div><code>MÓDULO K</code><h3>Web, marca y animación 3D</h3><p>Sitios, tiendas en línea, menús interactivos, identidad y animación.</p></div>
+        <div class="new"><code>MÓDULO L · NUEVO</code><h3>QR con geolocalización</h3><p>Control de cualquier activo a bajo costo: quién lo escaneó, cuándo y dónde.</p></div>
       </div>
     </div>
   </section>
@@ -448,17 +512,50 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
     </article>
   </section>
 
-  <!-- 8 · ATERRIZAJE -->
-  <section class="stage landing side-center" id="contacto" data-stage="8" data-from="bottom">
+  <!-- 8 · QR -->
+  <section class="stage side-left" id="m-qr" data-stage="8" data-from="depth">
     <article class="panel hud">
-      <div class="head"><span class="m">Misión 07 · Tu idea</span><span>Alt 0 km</span></div>
+      <div class="head"><span class="m">Misión 07 · 2026 · Nuevo</span><span>Alt 1 900 km</span></div>
+      <h2>Activos con QR y geolocalización</h2>
+      <p class="sub">Control de cualquier activo, a bajo costo</p>
+      <p>Una etiqueta QR en cada equipo, herramienta o activo. Al escanearla con cualquier celular queda registrado quién, cuándo y dónde, con su ubicación en el mapa, su historial y sus documentos. Sin lectores especiales ni hardware caro.</p>
+      <div class="qrdemo">
+        <div class="qrbox"><svg viewBox="0 0 27 27" shape-rendering="crispEdges" aria-hidden="true"><rect width="27" height="27" fill="#e4f2ff"/><path d="M1 1h1v1h-1zM2 1h1v1h-1zM3 1h1v1h-1zM4 1h1v1h-1zM5 1h1v1h-1zM6 1h1v1h-1zM7 1h1v1h-1zM11 1h1v1h-1zM12 1h1v1h-1zM14 1h1v1h-1zM16 1h1v1h-1zM19 1h1v1h-1zM20 1h1v1h-1zM21 1h1v1h-1zM22 1h1v1h-1zM23 1h1v1h-1zM24 1h1v1h-1zM25 1h1v1h-1zM1 2h1v1h-1zM7 2h1v1h-1zM14 2h1v1h-1zM15 2h1v1h-1zM16 2h1v1h-1zM19 2h1v1h-1zM25 2h1v1h-1zM1 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM5 3h1v1h-1zM7 3h1v1h-1zM9 3h1v1h-1zM11 3h1v1h-1zM12 3h1v1h-1zM14 3h1v1h-1zM16 3h1v1h-1zM17 3h1v1h-1zM19 3h1v1h-1zM21 3h1v1h-1zM22 3h1v1h-1zM23 3h1v1h-1zM25 3h1v1h-1zM1 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM5 4h1v1h-1zM7 4h1v1h-1zM9 4h1v1h-1zM11 4h1v1h-1zM13 4h1v1h-1zM15 4h1v1h-1zM16 4h1v1h-1zM17 4h1v1h-1zM19 4h1v1h-1zM21 4h1v1h-1zM22 4h1v1h-1zM23 4h1v1h-1zM25 4h1v1h-1zM1 5h1v1h-1zM3 5h1v1h-1zM4 5h1v1h-1zM5 5h1v1h-1zM7 5h1v1h-1zM9 5h1v1h-1zM17 5h1v1h-1zM19 5h1v1h-1zM21 5h1v1h-1zM22 5h1v1h-1zM23 5h1v1h-1zM25 5h1v1h-1zM1 6h1v1h-1zM7 6h1v1h-1zM9 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM16 6h1v1h-1zM19 6h1v1h-1zM25 6h1v1h-1zM1 7h1v1h-1zM2 7h1v1h-1zM3 7h1v1h-1zM4 7h1v1h-1zM5 7h1v1h-1zM6 7h1v1h-1zM7 7h1v1h-1zM9 7h1v1h-1zM11 7h1v1h-1zM13 7h1v1h-1zM15 7h1v1h-1zM17 7h1v1h-1zM19 7h1v1h-1zM20 7h1v1h-1zM21 7h1v1h-1zM22 7h1v1h-1zM23 7h1v1h-1zM24 7h1v1h-1zM25 7h1v1h-1zM9 8h1v1h-1zM10 8h1v1h-1zM12 8h1v1h-1zM13 8h1v1h-1zM15 8h1v1h-1zM1 9h1v1h-1zM3 9h1v1h-1zM4 9h1v1h-1zM5 9h1v1h-1zM6 9h1v1h-1zM7 9h1v1h-1zM11 9h1v1h-1zM12 9h1v1h-1zM13 9h1v1h-1zM16 9h1v1h-1zM17 9h1v1h-1zM19 9h1v1h-1zM20 9h1v1h-1zM21 9h1v1h-1zM22 9h1v1h-1zM23 9h1v1h-1zM1 10h1v1h-1zM3 10h1v1h-1zM4 10h1v1h-1zM5 10h1v1h-1zM9 10h1v1h-1zM12 10h1v1h-1zM14 10h1v1h-1zM15 10h1v1h-1zM17 10h1v1h-1zM20 10h1v1h-1zM24 10h1v1h-1zM3 11h1v1h-1zM5 11h1v1h-1zM6 11h1v1h-1zM7 11h1v1h-1zM8 11h1v1h-1zM10 11h1v1h-1zM13 11h1v1h-1zM14 11h1v1h-1zM15 11h1v1h-1zM16 11h1v1h-1zM17 11h1v1h-1zM18 11h1v1h-1zM20 11h1v1h-1zM21 11h1v1h-1zM22 11h1v1h-1zM24 11h1v1h-1zM25 11h1v1h-1zM2 12h1v1h-1zM3 12h1v1h-1zM4 12h1v1h-1zM6 12h1v1h-1zM8 12h1v1h-1zM10 12h1v1h-1zM11 12h1v1h-1zM14 12h1v1h-1zM16 12h1v1h-1zM18 12h1v1h-1zM19 12h1v1h-1zM20 12h1v1h-1zM25 12h1v1h-1zM1 13h1v1h-1zM5 13h1v1h-1zM7 13h1v1h-1zM9 13h1v1h-1zM10 13h1v1h-1zM12 13h1v1h-1zM13 13h1v1h-1zM15 13h1v1h-1zM16 13h1v1h-1zM18 13h1v1h-1zM19 13h1v1h-1zM20 13h1v1h-1zM21 13h1v1h-1zM23 13h1v1h-1zM24 13h1v1h-1zM25 13h1v1h-1zM1 14h1v1h-1zM4 14h1v1h-1zM6 14h1v1h-1zM17 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM24 14h1v1h-1zM1 15h1v1h-1zM3 15h1v1h-1zM4 15h1v1h-1zM5 15h1v1h-1zM7 15h1v1h-1zM10 15h1v1h-1zM12 15h1v1h-1zM13 15h1v1h-1zM16 15h1v1h-1zM18 15h1v1h-1zM19 15h1v1h-1zM20 15h1v1h-1zM21 15h1v1h-1zM22 15h1v1h-1zM24 15h1v1h-1zM25 15h1v1h-1zM1 16h1v1h-1zM10 16h1v1h-1zM12 16h1v1h-1zM15 16h1v1h-1zM17 16h1v1h-1zM19 16h1v1h-1zM20 16h1v1h-1zM21 16h1v1h-1zM25 16h1v1h-1zM1 17h1v1h-1zM3 17h1v1h-1zM4 17h1v1h-1zM5 17h1v1h-1zM7 17h1v1h-1zM8 17h1v1h-1zM9 17h1v1h-1zM10 17h1v1h-1zM12 17h1v1h-1zM17 17h1v1h-1zM18 17h1v1h-1zM19 17h1v1h-1zM20 17h1v1h-1zM21 17h1v1h-1zM23 17h1v1h-1zM9 18h1v1h-1zM10 18h1v1h-1zM11 18h1v1h-1zM13 18h1v1h-1zM14 18h1v1h-1zM15 18h1v1h-1zM16 18h1v1h-1zM17 18h1v1h-1zM21 18h1v1h-1zM22 18h1v1h-1zM1 19h1v1h-1zM2 19h1v1h-1zM3 19h1v1h-1zM4 19h1v1h-1zM5 19h1v1h-1zM6 19h1v1h-1zM7 19h1v1h-1zM10 19h1v1h-1zM11 19h1v1h-1zM14 19h1v1h-1zM15 19h1v1h-1zM17 19h1v1h-1zM19 19h1v1h-1zM21 19h1v1h-1zM23 19h1v1h-1zM24 19h1v1h-1zM25 19h1v1h-1zM1 20h1v1h-1zM7 20h1v1h-1zM9 20h1v1h-1zM10 20h1v1h-1zM13 20h1v1h-1zM14 20h1v1h-1zM16 20h1v1h-1zM17 20h1v1h-1zM21 20h1v1h-1zM22 20h1v1h-1zM24 20h1v1h-1zM25 20h1v1h-1zM1 21h1v1h-1zM3 21h1v1h-1zM4 21h1v1h-1zM5 21h1v1h-1zM7 21h1v1h-1zM9 21h1v1h-1zM11 21h1v1h-1zM13 21h1v1h-1zM15 21h1v1h-1zM16 21h1v1h-1zM17 21h1v1h-1zM18 21h1v1h-1zM19 21h1v1h-1zM20 21h1v1h-1zM21 21h1v1h-1zM23 21h1v1h-1zM25 21h1v1h-1zM1 22h1v1h-1zM3 22h1v1h-1zM4 22h1v1h-1zM5 22h1v1h-1zM7 22h1v1h-1zM9 22h1v1h-1zM10 22h1v1h-1zM17 22h1v1h-1zM18 22h1v1h-1zM19 22h1v1h-1zM21 22h1v1h-1zM22 22h1v1h-1zM23 22h1v1h-1zM24 22h1v1h-1zM25 22h1v1h-1zM1 23h1v1h-1zM3 23h1v1h-1zM4 23h1v1h-1zM5 23h1v1h-1zM7 23h1v1h-1zM9 23h1v1h-1zM11 23h1v1h-1zM12 23h1v1h-1zM13 23h1v1h-1zM16 23h1v1h-1zM22 23h1v1h-1zM23 23h1v1h-1zM25 23h1v1h-1zM1 24h1v1h-1zM7 24h1v1h-1zM12 24h1v1h-1zM15 24h1v1h-1zM17 24h1v1h-1zM18 24h1v1h-1zM19 24h1v1h-1zM20 24h1v1h-1zM21 24h1v1h-1zM22 24h1v1h-1zM25 24h1v1h-1zM1 25h1v1h-1zM2 25h1v1h-1zM3 25h1v1h-1zM4 25h1v1h-1zM5 25h1v1h-1zM6 25h1v1h-1zM7 25h1v1h-1zM9 25h1v1h-1zM11 25h1v1h-1zM12 25h1v1h-1zM18 25h1v1h-1zM19 25h1v1h-1zM20 25h1v1h-1zM21 25h1v1h-1zM22 25h1v1h-1zM23 25h1v1h-1zM24 25h1v1h-1zM25 25h1v1h-1z" fill="#03050b"/></svg><span class="scan" aria-hidden="true"></span><small>Escanéalo: te lleva a wmdes.art</small></div>
+        <div class="asset">
+          <dl>
+            <dt>Activo</dt><dd>Montacargas ECO-14</dd>
+            <dt>Escaneo</dt><dd>Hace 3 min · técnico de ruta</dd>
+            <dt>Ubicación</dt><dd>17.987° N, 92.930° O</dd>
+            <dt>Estado</dt><dd class="ok">En servicio</dd>
+          </dl>
+          <div class="minimap"><svg viewBox="0 0 300 90" aria-hidden="true">
+            <defs><pattern id="gr" width="15" height="15" patternUnits="userSpaceOnUse"><path d="M15 0H0V15" fill="none" stroke="rgba(110,190,255,.14)"/></pattern></defs>
+            <rect width="300" height="90" fill="url(#gr)"/>
+            <path d="M20 70 C70 60 90 30 140 38 S220 64 252 34" fill="none" stroke="rgba(255,181,71,.55)" stroke-dasharray="4 4"/>
+            <circle cx="20" cy="70" r="3" fill="#8ea2b8"/><circle cx="140" cy="38" r="3" fill="#8ea2b8"/>
+            <circle cx="252" cy="34" r="5" fill="#ffb547"><animate attributeName="r" values="5;14;5" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;.2;1" dur="2s" repeatCount="indefinite"/></circle>
+            <circle cx="252" cy="34" r="4" fill="#ffb547"/>
+          </svg></div>
+          <div class="cap">Ejemplo de ficha de activo</div>
+        </div>
+      </div>
+      <ul class="chips" style="margin-top:1.1rem">
+        <li>Etiquetas QR</li><li>Ubicación al escanear</li><li>Historial por activo</li><li>Inventario</li><li>Alertas</li><li>Sin hardware costoso</li>
+      </ul>
+    </article>
+  </section>
+
+  <!-- 9 · ATERRIZAJE -->
+  <section class="stage landing side-center" id="contacto" data-stage="9" data-from="bottom">
+    <article class="panel hud">
+      <div class="head"><span class="m">Misión 08 · Tu idea</span><span>Alt 0 km</span></div>
       <h2>¿Qué aterrizamos ahora?</h2>
       <p class="sub">Cuéntanos la idea, aunque parezca de otro mundo.</p>
       <form id="ideaForm" novalidate>
         <label for="fName">Nombre<input id="fName" name="nombre" autocomplete="name" required></label>
         <label for="fType">Tipo de proyecto
           <select id="fType" name="tipo">
-            <option>Software a medida</option><option>Agente telefónico con IA</option><option>Chatbot o WhatsApp</option><option>App móvil</option><option>CRM o ERP</option><option>Mundo 3D / WebGL</option><option>Inteligencia artificial</option><option>Página web o marca</option><option>Otra cosa</option>
+            <option>Software a medida</option><option>Agente telefónico con IA</option><option>QR y control de activos</option><option>Chatbot o WhatsApp</option><option>App móvil</option><option>CRM o ERP</option><option>Mundo 3D / WebGL</option><option>Inteligencia artificial</option><option>Página web o marca</option><option>Otra cosa</option>
           </select>
         </label>
         <label class="full" for="fIdea">Tu idea<textarea id="fIdea" name="idea" required placeholder="Ej. un sistema que muestre en 3D dónde está cada equipo de mi flotilla"></textarea></label>
@@ -493,19 +590,19 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
 
   /* ---------- Keyframes por etapa ---------- */
   const K = {
-    dist: [60, 24, 11, 7.2, 4.9, 3.6, 2.7, 2.1, 1.72],
-    lon:  [35, 5, -25, -50, -70, -84, -92, -97, -99.1],
-    lat:  [5, 9, 12, 15, 17, 18.5, 19, 19.3, 19.4],
-    alt:  [384400, 152000, 70000, 41000, 25000, 16500, 10200, 4800, 0],
+    dist: [60, 24, 11, 7.2, 4.9, 3.6, 2.8, 2.25, 1.95, 1.72],
+    lon:  [35, 5, -25, -50, -70, -84, -91, -95, -97.5, -99.1],
+    lat:  [5, 9, 12, 15, 17, 18.5, 19, 19.2, 19.3, 19.4],
+    alt:  [384400, 152000, 70000, 41000, 25000, 16500, 10200, 4800, 1900, 0],
     // órbita de cámara (rad): el recorrido rodea la Tierra en vez de bajar en línea recta
-    az:   [0, .35, -.42, .5, -.38, .44, -.3, .36, 0],
-    el:   [0, .18, -.14, .22, -.2, .12, -.16, .1, .16],
-    roll: [0, .06, -.12, .1, -.08, .12, -.1, .07, 0],
+    az:   [0, .35, -.42, .5, -.38, .44, -.3, .36, -.28, 0],
+    el:   [0, .18, -.14, .22, -.2, .12, -.16, .1, -.12, .16],
+    roll: [0, .06, -.12, .1, -.08, .12, -.1, .07, -.06, 0],
     // encuadre: la Tierra va al lado contrario del panel (x) o abajo (y)
-    offX: [-.2, 0, -.21, .21, -.21, .21, -.21, .21, 0],
-    offY: [0, -.05, 0, 0, 0, 0, 0, 0, -.28],
-    shipX:[0, -.5, .45, -.5, .5, -.4, .45, -.45, 0],
-    obj:  ['Tierra · México','Tierra · México','Misión 01 · RUY','Misión 02 · MISSER','Misión 03 · WMDES','Misión 04 · CMMS','Misión 05 · Atlas','Misión 06 · Agentes IA','Aterrizaje · México']
+    offX: [-.2, 0, -.21, .21, -.21, .21, -.21, .21, -.21, 0],
+    offY: [0, -.05, 0, 0, 0, 0, 0, 0, 0, -.28],
+    shipX:[0, -.5, .45, -.5, .5, -.4, .45, -.45, .4, 0],
+    obj:  ['Tierra · México','Tierra · México','Misión 01 · RUY','Misión 02 · MISSER','Misión 03 · WMDES','Misión 04 · CMMS','Misión 05 · Atlas','Misión 06 · Agentes IA','Misión 07 · QR','Aterrizaje · México']
   };
   /* Dirección de entrada de cada transmisión */
   const FROM={top:[0,-1,0,0],right:[1,0,0,0],left:[-1,0,0,0],bottom:[0,1,0,0],diag:[1,-1,-8,0],depth:[0,0,0,1],spin:[1,.4,14,0]};
@@ -570,8 +667,47 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
     else v.pause();
   }),{rootMargin:'200px'});
   lazy.forEach(v=>io.observe(v));
-  const heroVid=document.getElementById('heroVid');
-  if(reduce){heroVid.removeAttribute('autoplay');heroVid.pause();}
+  /* ---------- Entrada: secuencia del video controlada por el scroll ---------- */
+  const intro=document.getElementById('inicio'), seq=document.getElementById('seq'), sx2=seq.getContext('2d');
+  const ovA=document.getElementById('ovA'), ovB=document.getElementById('ovB'), ovC=document.getElementById('ovC'), introBar=document.getElementById('introBar');
+  const NF=121, frames=new Array(NF); let introP=0, lastDrawn=-1;
+  function loadFrame(i){ if(frames[i]) return frames[i]; const im=new Image(); im.decoding='async'; im.src='assets/seq/f'+String(i+1).padStart(3,'0')+'.webp'; im.onload=()=>{lastDrawn=-1;}; frames[i]=im; return im; }
+  loadFrame(0);
+  addEventListener('load',()=>{ let i=1; (function next(){ for(let k=0;k<6&&i<NF;k++,i++) loadFrame(i); if(i<NF) setTimeout(next,60); })(); });
+  // tramos: roca se acerca → explota → mecha de frente (pausa) → se transforma → nave
+  const TP=[[0,0],[.2,1.9],[.3,3.0],[.62,6.0],[.75,7.6],[.94,10]];
+  function tAt(p){ for(let i=1;i<TP.length;i++){ if(p<=TP[i][0]){const [p0,t0]=TP[i-1],[p1,t1]=TP[i];return t0+(t1-t0)*(p-p0)/(p1-p0);} } return 10; }
+  let sw=0,sh=0;
+  function sizeSeq(){ const d=Math.min(devicePixelRatio||1,2); sw=seq.clientWidth; sh=seq.clientHeight; seq.width=sw*d; seq.height=sh*d; sx2.setTransform(d,0,0,d,0,0); lastDrawn=-1; }
+  sizeSeq(); addEventListener('resize',sizeSeq);
+  const band=(p,a,b,c,d)=>Math.max(0,Math.min(1,Math.min((p-a)/(b-a),(d-p)/(d-c))));
+  function drawIntro(){
+    const r=intro.getBoundingClientRect(), span=Math.max(1,r.height-innerHeight);
+    introP=Math.max(0,Math.min(1,-r.top/span));
+    introBar.style.width=(introP*100)+'%';
+    ovA.style.opacity=String(Math.max(0,1-introP/.12)); ovA.style.transform=`translateY(${-introP*240}px)`;
+    ovA.style.visibility=introP>.13?'hidden':'visible';
+    const b=band(introP,.33,.38,.58,.64); ovB.style.opacity=String(b); ovB.style.visibility=b>0?'visible':'hidden';
+    const c=band(introP,.8,.85,.95,.99); ovC.style.opacity=String(c);
+    seq.style.opacity=String(1-Math.max(0,(introP-.93)/.07));
+    if(r.bottom<0) return;
+    let fi=Math.round(tAt(introP)*12); fi=Math.max(0,Math.min(NF-1,fi));
+    let im=loadFrame(fi), k=fi; while(k>0&&!(frames[k]&&frames[k].complete&&frames[k].naturalWidth)) k--; im=frames[k];
+    if(!(im&&im.complete&&im.naturalWidth)) return;
+    const key=k*10000+sw; if(key===lastDrawn) return; lastDrawn=key;
+    sx2.clearRect(0,0,sw,sh);
+    const ar=im.naturalWidth/im.naturalHeight, zoom=1+.06*introP;
+    let h=sh*zoom, w=h*ar; if(w<sw*.62&&sw<980){w=sw*zoom;h=w/ar;} if(sw<980&&w<sw){w=sw;h=w/ar;}
+    const x0=(sw-w)/2, y0=(sh-h)/2; sx2.drawImage(im,x0,y0,w,h);
+    if(w<sw){ // funde los bordes del video con el espacio
+      sx2.globalCompositeOperation='destination-out';
+      let g=sx2.createLinearGradient(x0,0,x0+w*.22,0); g.addColorStop(0,'rgba(0,0,0,1)'); g.addColorStop(1,'rgba(0,0,0,0)'); sx2.fillStyle=g; sx2.fillRect(x0-2,0,w*.22+2,sh);
+      g=sx2.createLinearGradient(x0+w,0,x0+w*.78,0); g.addColorStop(0,'rgba(0,0,0,1)'); g.addColorStop(1,'rgba(0,0,0,0)'); sx2.fillStyle=g; sx2.fillRect(x0+w*.78,0,w*.22+2,sh);
+      sx2.globalCompositeOperation='source-over';
+    }
+  }
+  drawIntro();
+  document.querySelectorAll('a[href="#quienes"]').forEach(l=>l.addEventListener('click',e=>{e.preventDefault();const span=intro.offsetHeight-innerHeight;scrollTo({top:intro.offsetTop+span*.48,behavior:reduce?'auto':'smooth'});}));
   // pestañas RUY
   document.querySelectorAll('.tabs').forEach(tb=>{
     const vid=document.getElementById(tb.dataset.vid), cap=document.getElementById(tb.dataset.cap);
@@ -618,21 +754,21 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
       x.clearRect(0,0,w,h);
       x.globalCompositeOperation='lighter';
       for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.l-=.028;p.x+=p.vx;p.y+=p.vy;p.r*=.985;if(p.l<=0){parts.splice(i,1);continue;}
-        const g=x.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*3);g.addColorStop(0,`rgba(170,230,255,${.55*p.l})`);g.addColorStop(.35,`rgba(86,208,255,${.35*p.l})`);g.addColorStop(1,'rgba(29,134,200,0)');
+        const g=x.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*3);g.addColorStop(0,`rgba(255,226,170,${.6*p.l})`);g.addColorStop(.3,`rgba(255,120,40,${.45*p.l})`);g.addColorStop(.7,`rgba(220,40,20,${.22*p.l})`);g.addColorStop(1,'rgba(160,20,10,0)');
         x.fillStyle=g;x.beginPath();x.arc(p.x,p.y,p.r*3,0,Math.PI*2);x.fill();}
       if(parts.length>500) parts.splice(0,parts.length-500);
       if(shown){
         x.globalAlpha=alpha;
         hv+=(hover-hv)*.2; const R=(fine?9:12)*(1+hv*.45);
         // halo
-        const hg=x.createRadialGradient(px,py,R*.6,px,py,R*3.2);hg.addColorStop(0,`rgba(86,208,255,${.45+hv*.3})`);hg.addColorStop(1,'rgba(86,208,255,0)');
+        const hg=x.createRadialGradient(px,py,R*.6,px,py,R*3.2);hg.addColorStop(0,`rgba(255,110,40,${.5+hv*.3})`);hg.addColorStop(1,'rgba(220,40,20,0)');
         x.fillStyle=hg;x.beginPath();x.arc(px,py,R*3.2,0,Math.PI*2);x.fill();
         x.globalCompositeOperation='source-over';
         rot+=.02+sp*.004;
         x.save();x.translate(px,py);x.rotate(rot);
         x.beginPath();verts.forEach(([cx,cy,r],i)=>{const vx=cx*r*R,vy=cy*r*R;i?x.lineTo(vx,vy):x.moveTo(vx,vy);});x.closePath();
         const rg=x.createRadialGradient(-R*.35,-R*.35,R*.1,0,0,R*1.1);rg.addColorStop(0,'#9aa6b4');rg.addColorStop(.55,'#4a5361');rg.addColorStop(1,'#1b2029');
-        x.fillStyle=rg;x.fill();x.lineWidth=1;x.strokeStyle='rgba(140,220,255,.85)';x.stroke();
+        x.fillStyle=rg;x.fill();x.lineWidth=1;x.strokeStyle='rgba(255,150,80,.9)';x.stroke();
         craters.forEach(([cx,cy,r])=>{x.beginPath();x.arc(cx*R,cy*R,r*R,0,Math.PI*2);x.fillStyle='rgba(15,18,24,.55)';x.fill();});
         x.restore();
         x.globalAlpha=1;
@@ -743,7 +879,7 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
   /* Puntos de aterrizaje: uno por misión, alrededor de México */
   const beaconTex=glowTex([[0,'rgba(255,214,140,1)'],[.25,'rgba(255,181,71,.55)'],[1,'rgba(255,181,71,0)']]);
   const crystalTex=glowTex([[0,'rgba(220,245,255,1)'],[.3,'rgba(86,208,255,.55)'],[1,'rgba(86,208,255,0)']]);
-  const sites=[[24.5,-107],[20.6,-103.3],[25.7,-100.3],[17,-96.7],[18,-92.9],[21,-89.6]];
+  const sites=[[24.5,-107],[20.6,-103.3],[25.7,-100.3],[17,-96.7],[18,-92.9],[21,-89.6],[29,-106]];
   const marks=sites.map(([la,lo])=>{
     const g=new T.Group(); const p=ll(la,lo,1.002); g.position.copy(p); g.lookAt(p.clone().multiplyScalar(2));
     const dot=new T.Sprite(new T.SpriteMaterial({map:beaconTex,transparent:true,depthWrite:false,blending:T.AdditiveBlending,opacity:0}));
@@ -799,6 +935,58 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
   const sMat=new T.LineBasicMaterial({color:0x9fdcff,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false});
   const streaks=new T.LineSegments(sGeo,sMat); streaks.frustumCulled=false; camera.add(streaks);
 
+  /* ---------- Planetas: un proyecto, un mundo ---------- */
+  function noiseTex(cols,seed,opt={}){
+    const W2=512,H2=256,c=document.createElement('canvas');c.width=W2;c.height=H2;const x=c.getContext('2d'),img=x.createImageData(W2,H2);
+    let sd=seed*9301+49297; const rnd=()=>((sd=(sd*9301+49297)%233280)/233280);
+    const G=[];for(let o=0;o<4;o++){const gw=8<<o,gh=4<<o,g=[];for(let i=0;i<(gw+1)*(gh+1);i++)g.push(rnd());G.push({gw,gh,g});}
+    const smp=(L,u,v)=>{const X=u*L.gw,Y=v*L.gh,xi=Math.floor(X),yi=Math.floor(Y),fx=X-xi,fy=Y-yi,ix=(a,b)=>L.g[(b%(L.gh+1))*(L.gw+1)+(a%L.gw)];
+      const sx=fx*fx*(3-2*fx),sy=fy*fy*(3-2*fy);return lerp(lerp(ix(xi,yi),ix(xi+1,yi),sx),lerp(ix(xi,yi+1),ix(xi+1,yi+1),sx),sy);};
+    for(let j=0;j<H2;j++)for(let i=0;i<W2;i++){
+      const u=i/W2,v=j/H2;let n=0,a=.5;for(const L of G){n+=smp(L,u,v)*a;a*=.5;}
+      let t=opt.bands? (Math.sin((v*opt.bands+n*2.2)*Math.PI)*.5+.5) : n/.94;
+      t=Math.max(0,Math.min(.999,t)); const f=t*(cols.length-1),k=Math.floor(f),r=f-k,c0=cols[k],c1=cols[Math.min(cols.length-1,k+1)];
+      const o=(j*W2+i)*4; img.data[o]=lerp(c0[0],c1[0],r);img.data[o+1]=lerp(c0[1],c1[1],r);img.data[o+2]=lerp(c0[2],c1[2],r);img.data[o+3]=255;}
+    x.putImageData(img,0,0); const t=new T.CanvasTexture(c); t.encoding=T.sRGBEncoding; return t;
+  }
+  const hex=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+  const PL=[ // RUY, MISSER, WMDES, CMMS, Atlas, Agentes, QR
+    {c:['#1a1f29','#59636f','#aab4bf','#3c4550'],seed:3},
+    {c:['#04140c','#0f3d22','#47c46b','#b9ffcf'],seed:7,bands:5},
+    {c:['#2a0b3d','#c2187a','#ffd23f','#1fb8c9','#5a1a8c'],seed:11,bands:7},
+    {c:['#141414','#3a3a3a','#f2c500','#fff3a6'],seed:5,bands:4,ring:0xf2c500},
+    {c:['#0b1630','#1d3b78','#f5b800','#2a4a8f'],seed:13},
+    {c:['#140a2e','#4a2a9a','#9f7bff','#e3d9ff'],seed:17,bands:6},
+    {c:['#2b0a05','#8a2410','#ff6a2b','#ffc27a'],seed:19,ring:0xff6a2b}
+  ];
+  const planets=[], pose=(st)=>{const e=new T.Euler(-K.el[st],K.az[st],K.roll[st],'YXZ'),q=new T.Quaternion().setFromEuler(e);return {q,pos:new T.Vector3(0,0,K.dist[st]).applyQuaternion(q)};};
+  PL.forEach((d,j)=>{
+    const st=j+2, {q,pos}=pose(st), dd=K.dist[st], side=K.offX[st]<0?1:-1, D=.48*dd;
+    const local=new T.Vector3(side*D*.42, D*.2, -D);
+    const g=new T.Group(); g.position.copy(local.applyQuaternion(q).add(pos));
+    const r=.07*dd;
+    const m=new T.Mesh(new T.SphereGeometry(r,64,32),new T.MeshStandardMaterial({map:noiseTex(d.c.map(hex),d.seed,{bands:d.bands}),roughness:.85,metalness:.05}));
+    m.rotation.z=.35; g.add(m);
+    const halo=new T.Mesh(new T.SphereGeometry(r*1.12,48,24),new T.ShaderMaterial({side:T.BackSide,transparent:true,blending:T.AdditiveBlending,depthWrite:false,uniforms:{c:{value:new T.Color(d.ring||hex(d.c[2]).reduce((a,v,i)=>a+v*[65536,256,1][i],0))}},
+      vertexShader:`varying vec3 vN;void main(){vN=normalize(normalMatrix*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+      fragmentShader:`uniform vec3 c;varying vec3 vN;void main(){float i=pow(.75-dot(vN,vec3(0,0,1.)),3.);gl_FragColor=vec4(c*i*1.4,i);}`}));
+    g.add(halo);
+    if(d.ring){const rg=new T.Mesh(new T.RingGeometry(r*1.45,r*2.1,96),new T.MeshBasicMaterial({color:d.ring,transparent:true,opacity:.35,side:T.DoubleSide,depthWrite:false}));rg.rotation.x=1.25;rg.rotation.y=.25;g.add(rg);}
+    g.userData={m,st}; g.scale.setScalar(.001); scene.add(g); planets.push(g);
+  });
+
+  /* ---------- Rocas flotantes que pasan con el scroll ---------- */
+  const rockMat=new T.MeshStandardMaterial({color:0x323844,roughness:.95,metalness:.05,flatShading:true});
+  const rocks=[];
+  for(let i=0;i<14;i++){
+    const geo=new T.IcosahedronGeometry(1,1), pa=geo.attributes.position;
+    for(let k=0;k<pa.count;k++){const v=new T.Vector3().fromBufferAttribute(pa,k);v.multiplyScalar(.72+Math.random()*.5);pa.setXYZ(k,v.x,v.y*(.7+Math.random()*.3),v.z);}
+    geo.computeVertexNormals();
+    const m=new T.Mesh(geo,rockMat), side=i%2?1:-1;
+    m.userData={x:side*(1.6+Math.random()*3.2),y:(Math.random()-.5)*4.2,z:-3-Math.random()*16,s:.08+Math.random()*.28,rx:(Math.random()-.5)*.8,ry:(Math.random()-.5)*.8};
+    camera.add(m); rocks.push(m);
+  }
+
   /* ---------- Tamaño y encuadre ---------- */
   let W=0,H=0,mobile=false,sCur=0;
   function resize(){
@@ -845,18 +1033,18 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
       const on=s>=i+2-.15;
       const target=on?1:0;
       m.dot.material.opacity=lerp(m.dot.material.opacity,target,.08);
-      const sc=.035+.02*Math.sin(time*3+i); m.dot.scale.set(sc*(1+(s>7.5?1:0)),sc*(1+(s>7.5?1:0)),1);
+      const sc=.035+.02*Math.sin(time*3+i); m.dot.scale.set(sc*(1+(s>8.5?1:0)),sc*(1+(s>8.5?1:0)),1);
       if(on && m.t<0) m.t=0;
       if(!on) m.t=-1;
       if(m.t>=0){ m.t+=dt; const k=(m.t%2.4)/2.4; m.ring.scale.setScalar(.008+k*.05); m.ring.material.opacity=(1-k)*.8; }
       else m.ring.material.opacity=0;
     });
-    const land=Math.max(0,Math.min(1,(s-7.2)/.8));
+    const land=Math.max(0,Math.min(1,(s-8.2)/.8));
     beam.material.uniforms.a.value=land*(.85+.15*Math.sin(time*6));
     beam.scale.y=.2+land*.9; beam.position.y=beam.scale.y/2;
 
     // nave
-    const appear=Math.max(0,Math.min(1,(s-.25)/.6));
+    const appear=Math.max(Math.max(0,Math.min(1,(introP-.93)/.07)),Math.max(0,Math.min(1,(s-.25)/.6)));
     ship.visible=appear>0.01;
     if(ship.visible){
       const bob=reduce?0:Math.sin(time*1.3)*.06;
@@ -877,6 +1065,14 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
       thr.forEach((s2,i)=>{const k=(i===4?.8:1.15)*pulse; s2.scale.set(k,k,1);});
     }
 
+    // planetas: crecen al acercarse su misión y giran
+    planets.forEach(g=>{const k=Math.max(0,1-Math.abs(s-g.userData.st)/1.6); const tgt=k>0?Math.max(.001,Math.min(1,k*1.6)):.001; g.scale.setScalar(lerp(g.scale.x,tgt,.08)); g.userData.m.rotation.y+=dt*.12;});
+
+    // rocas: pasan junto a la cámara al hacer scroll
+    const vr=Math.min(1,Math.abs(vel)/2500), rv=(reduce?0:(.5+vr*14))*(vel>=0?1:-1), rockOn=Math.max(0,Math.min(1,(introP-.9)/.1))*(1-land);
+    rocks.forEach(m=>{const u=m.userData; u.z+=rv*dt; if(u.z>-1.5)u.z-=18; if(u.z<-19.5)u.z+=18;
+      m.position.set(u.x,u.y,u.z); m.rotation.x+=u.rx*dt; m.rotation.y+=u.ry*dt; m.scale.setScalar(u.s*rockOn+.0001); m.visible=rockOn>.01;});
+
     // estelas
     const v=Math.min(1,Math.abs(vel)/2500);
     sMat.opacity=reduce?0:lerp(sMat.opacity,.08+v*.75,.1);
@@ -890,8 +1086,7 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
       sGeo.attributes.position.needsUpdate=true;
     }
 
-    // video del héroe se desvanece
-    heroVid.style.opacity=String(Math.max(0,1-s*1.6));
+    drawIntro();
 
     hud(s,vel); movePanels();
     renderer.render(scene,camera);
@@ -901,7 +1096,7 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
 
   function loopHudOnly(){
     let prev=scrollY;
-    (function f(){const y=scrollY;hud(stageAt(y),y-prev);movePanels();prev=y;requestAnimationFrame(f);})();
+    (function f(){const y=scrollY;hud(stageAt(y),y-prev);movePanels();drawIntro();prev=y;requestAnimationFrame(f);})();
   }
 })();
 </script>
