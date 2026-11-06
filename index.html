@@ -1035,34 +1035,105 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
   const beamG=new T.Group(); beamG.position.copy(MX); beamG.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),MX.clone().normalize());
   beam.position.y=.5; beam.scale.y=.6; beamG.add(beam); globe.add(beamG);
 
-  /* ---------- Nave WM ---------- */
+  /* ---------- Nave WM (modelo detallado) ---------- */
   const ship=new T.Group(); camera.add(ship);
-  const matBlue=new T.MeshStandardMaterial({color:0x1670c4,emissive:0x0d5fa3,emissiveIntensity:.75,metalness:.15,roughness:.45});
-  const matBlack=new T.MeshStandardMaterial({color:0x0a0d13,metalness:.45,roughness:.62,emissive:0x02060c});
-  const edgeBlue=new T.LineBasicMaterial({color:0x9fe6ff,transparent:true,opacity:.6,blending:T.AdditiveBlending});
-  const edgeDim=new T.LineBasicMaterial({color:0x56d0ff,transparent:true,opacity:.35,blending:T.AdditiveBlending});
-  function bar(a,b,w,d,mat,edge,z){
-    const dx=b[0]-a[0], dy=b[1]-a[1], L=Math.hypot(dx,dy)+w*.35;
-    const geo=new T.BoxGeometry(w,L,d); const m=new T.Mesh(geo,mat);
-    m.position.set((a[0]+b[0])/2,(a[1]+b[1])/2,z); m.rotation.z=Math.atan2(dy,dx)-Math.PI/2;
-    m.add(new T.LineSegments(new T.EdgesGeometry(geo),edge)); return m;
+  // entorno para reflejos: cielo azul arriba, franja cian y brillo naranja abajo
+  const envScene=new T.Scene();
+  envScene.add(new T.Mesh(new T.SphereGeometry(10,32,16),new T.ShaderMaterial({side:T.BackSide,depthWrite:false,
+    vertexShader:`varying vec3 vP;void main(){vP=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+    fragmentShader:`varying vec3 vP;void main(){float y=vP.y;vec3 c=mix(vec3(1.,.42,.15)*.9,vec3(.02,.05,.12),smoothstep(-.6,-.05,y));c=mix(c,vec3(.25,.65,1.)*1.6,exp(-pow((y-.02)*9.,2.)));c=mix(c,vec3(.05,.12,.3),smoothstep(.1,.9,y));gl_FragColor=vec4(c,1.);}`})));
+  [[4,6,2,0xffffff,3],[-6,3,-3,0x9fe6ff,2],[0,-5,6,0xff8a40,1.5]].forEach(([x,y,z,c,s])=>{const p=new T.Mesh(new T.PlaneGeometry(s,s*.6),new T.MeshBasicMaterial({color:c,side:T.DoubleSide}));p.position.set(x,y,z);p.lookAt(0,0,0);envScene.add(p);});
+  const pmrem=new T.PMREMGenerator(renderer); const envMap=pmrem.fromScene(envScene,.04).texture; pmrem.dispose();
+  // textura de placas del casco
+  const hullTex=(()=>{const c=document.createElement('canvas');c.width=c.height=512;const x=c.getContext('2d');x.fillStyle='#8a94a3';x.fillRect(0,0,512,512);
+    for(let i=0;i<70;i++){const g=150+Math.random()*60|0;x.fillStyle=`rgb(${g},${g+4},${g+12})`;x.fillRect(Math.random()*512,Math.random()*512,30+Math.random()*120,20+Math.random()*80);}
+    x.strokeStyle='#2a2f38';x.lineWidth=2;for(let i=0;i<=16;i++){x.beginPath();x.moveTo(i*32+(i%3)*6,0);x.lineTo(i*32+(i%3)*6,512);x.stroke();}
+    for(let j=0;j<=10;j++){x.beginPath();x.moveTo(0,j*51);x.lineTo(512,j*51);x.stroke();}
+    x.fillStyle='#3a404a';for(let i=0;i<220;i++)x.fillRect(Math.random()*512,Math.random()*512,2,2);
+    const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=8;return t;})();
+  const seamTex=(()=>{const c=document.createElement('canvas');c.width=c.height=512;const x=c.getContext('2d');x.fillStyle='#000';x.fillRect(0,0,512,512);
+    x.strokeStyle='#4cc8ff';x.lineWidth=2;x.shadowColor='#4cc8ff';x.shadowBlur=6;
+    [[0,96,512,96],[0,300,512,300],[128,0,128,96],[384,300,384,512],[0,420,200,420],[300,200,512,200]].forEach(([a,b,c2,d])=>{x.beginPath();x.moveTo(a,b);x.lineTo(c2,d);x.stroke();});
+    x.fillStyle='#ffb547';x.shadowColor='#ffb547';for(let i=0;i<6;i++){x.fillRect(40+i*70,300-6,10,4);}
+    const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;return t;})();
+  const hull=new T.MeshPhysicalMaterial({color:0x0b0e14,metalness:.82,roughness:.42,roughnessMap:hullTex,map:hullTex,emissive:0xffffff,emissiveMap:seamTex,emissiveIntensity:.9,clearcoat:.5,clearcoatRoughness:.3,envMap,envMapIntensity:.8,side:T.DoubleSide});
+  const gun=new T.MeshPhysicalMaterial({color:0x1c222c,metalness:.85,roughness:.38,envMap,envMapIntensity:.85});
+  const crystal=new T.MeshPhysicalMaterial({color:0x3cc2ff,metalness:0,roughness:.06,transparent:true,opacity:.62,premultipliedAlpha:true,emissive:0x1478c0,emissiveIntensity:1.15,clearcoat:1,envMap,envMapIntensity:1.6,depthWrite:false});
+  const glass=new T.MeshPhysicalMaterial({color:0x06243a,metalness:.3,roughness:.04,clearcoat:1,envMap,envMapIntensity:2.2,emissive:0x0a3d63,emissiveIntensity:.55});
+  const glowLine=new T.MeshBasicMaterial({color:0x8fe4ff});
+  const add=(m,p)=>{(p||ship).add(m);return m;};
+  // fuselaje (perfil torneado, aplanado)
+  const prof=[[0.0,-2.5],[0.4,-2.42],[0.62,-2.0],[0.72,-1.0],[0.7,0.2],[0.58,1.2],[0.38,2.0],[0.14,2.55],[0.0,2.68]].map(([r,y])=>new T.Vector2(r,y));
+  const fusG=new T.LatheGeometry(prof,48); fusG.rotateX(Math.PI/2); fusG.scale(1.25,.55,1);
+  add(new T.Mesh(fusG,hull));
+  // lomo blindado
+  const spine=new T.Mesh(new T.BoxGeometry(.5,.18,2.6,1,1,1),gun); spine.position.set(0,.36,-.9); add(spine);
+  for(let i=0;i<5;i++){const v=new T.Mesh(new T.BoxGeometry(.36,.02,.06),glowLine); v.position.set(0,.46,-.2-i*.36); add(v);}
+  // cabina
+  const can=new T.Mesh(new T.SphereGeometry(1,32,16,0,Math.PI*2,0,Math.PI/2),glass); can.scale.set(.3,.24,.75); can.position.set(0,.24,.35); add(can);
+  // alas en flecha
+  const wShape=new T.Shape([[0.55,-0.5],[3.3,1.45],[3.55,1.95],[3.05,2.08],[0.6,1.65]].map(([a,b])=>new T.Vector2(a,b)));
+  const wingG=new T.ExtrudeGeometry(wShape,{depth:.1,bevelEnabled:true,bevelThickness:.035,bevelSize:.04,bevelSegments:2}); wingG.rotateX(-Math.PI/2); wingG.translate(0,-.05,0);
+  const nav=[];
+  [1,-1].forEach(sx=>{
+    const g=wingG.clone(); if(sx<0) g.scale(-1,1,1);
+    const w=new T.Mesh(g,hull); w.rotation.z=sx*.07; add(w);
+    // filo luminoso del borde de ataque
+    const a=new T.Vector3(sx*.55,.08,.5), b=new T.Vector3(sx*3.3,.08,-1.45), L=a.distanceTo(b);
+    const strip=new T.Mesh(new T.BoxGeometry(.035,.035,L),glowLine); strip.position.copy(a).add(b).multiplyScalar(.5); strip.lookAt(b); w.add(strip);
+    { const a2=new T.Vector3(sx*.62,.06,-1.62), b2=new T.Vector3(sx*3.0,.06,-2.05), L2=a2.distanceTo(b2); const st2=new T.Mesh(new T.BoxGeometry(.025,.025,L2),new T.MeshBasicMaterial({color:0xffb547})); st2.position.copy(a2).add(b2).multiplyScalar(.5); st2.lookAt(b2); w.add(st2); }
+    // placa secundaria
+    const pl=new T.Mesh(new T.BoxGeometry(1.1,.05,.5),gun); pl.position.set(sx*1.7,.1,-1.1); pl.rotation.y=sx*.62; w.add(pl);
+    // luz de navegación
+    const nl=new T.Sprite(new T.SpriteMaterial({map:crystalTex,color:sx>0?0x5dff8a:0xff4040,transparent:true,depthWrite:false,blending:T.AdditiveBlending}));
+    nl.position.set(sx*3.42,.1,-1.95); nl.scale.set(.5,.5,1); w.add(nl); nav.push(nl);
+    // cañón bajo el ala
+    const c=new T.Mesh(new T.CylinderGeometry(.065,.08,2.6,16),gun); c.rotation.x=Math.PI/2; c.position.set(sx*1.55,-.2,.1); add(c);
+    const cb=new T.Mesh(new T.CylinderGeometry(.13,.13,.7,12),gun); cb.rotation.x=Math.PI/2; cb.position.set(sx*1.55,-.2,-.7); add(cb);
+    const mz=new T.Mesh(new T.TorusGeometry(.075,.022,8,20),glowLine); mz.position.set(sx*1.55,-.2,1.42); add(mz);
+  });
+  // motores: dos principales y dos en las alas
+  const nacP=[[.16,0],[.27,.15],[.31,.6],[.3,1.15],[.26,1.38],[.22,1.45]].map(([r,y])=>new T.Vector2(r,y));
+  const flameMat=new T.ShaderMaterial({transparent:true,depthWrite:false,blending:T.AdditiveBlending,uniforms:{t:{value:0},p:{value:1}},
+    vertexShader:`varying float vy;varying vec2 vu;void main(){vy=position.y+.5;vu=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+    fragmentShader:`uniform float t,p;varying float vy;varying vec2 vu;void main(){float f=pow(vy,1.6);float n=.75+.25*sin(t*40.+vu.x*30.+vy*12.);vec3 c=mix(vec3(.2,.55,1.),vec3(.85,.97,1.),pow(vy,4.));gl_FragColor=vec4(c*f*n*p,f*n*p);}`});
+  const flames=[], nozzles=[];
+  [[.78,-.02,-1.05,1],[-.78,-.02,-1.05,1],[2.25,.02,-.55,.7],[-2.25,.02,-.55,.7]].forEach(([x,y,z,s])=>{
+    const ng=new T.LatheGeometry(nacP,32); ng.rotateX(-Math.PI/2);
+    const n=new T.Mesh(ng,gun); n.position.set(x,y,z); n.scale.setScalar(s); add(n);
+    const ring=new T.Mesh(new T.TorusGeometry(.24,.035,10,32),glowLine); ring.position.set(x,y,z-1.45*s); ring.scale.setScalar(s); add(ring);
+    const disk=new T.Mesh(new T.CircleGeometry(.22,24),new T.MeshBasicMaterial({color:0xbff0ff})); disk.position.set(x,y,z-1.44*s); disk.rotation.y=Math.PI; disk.scale.setScalar(s); add(disk);
+    const fg=new T.ConeGeometry(.2,1,24,1,true); fg.rotateX(-Math.PI/2); fg.translate(0,0,-.5);
+    const fl=new T.Mesh(fg,flameMat); fl.position.set(x,y,z-1.46*s); fl.scale.set(s,s,s*1.6); add(fl); flames.push({m:fl,s});
+    const gs=new T.Sprite(new T.SpriteMaterial({map:crystalTex,transparent:true,depthWrite:false,blending:T.AdditiveBlending})); gs.position.set(x,y,z-1.5*s); gs.scale.set(.9*s,.9*s,1); add(gs); nozzles.push(gs);
+  });
+  // emblema WM al frente: W de metal negro, M de cristal biselado
+  const emb=new T.Group(); emb.position.set(0,.62,1.25); emb.scale.setScalar(.5); add(emb);
+  function barGeo(a,b,w,d){const s=new T.Shape([new T.Vector2(a[0]-w/2,a[1]),new T.Vector2(a[0]+w/2,a[1]),new T.Vector2(b[0]+w/2,b[1]),new T.Vector2(b[0]-w/2,b[1])]);
+    const g=new T.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelThickness:.06,bevelSize:.05,bevelSegments:2}); g.translate(0,0,-d/2); return g;}
+  const Wp=[[-1.95,1.1],[-0.98,-1.1],[0,.95],[.98,-1.1],[1.95,1.1]], Mp=[[-1.5,-1.1],[-.62,1.1],[0,-.85],[.62,1.1],[1.5,-1.1]];
+  const black=new T.MeshPhysicalMaterial({color:0x07090d,metalness:.9,roughness:.22,clearcoat:.8,envMap,envMapIntensity:1.3});
+  for(let i=0;i<4;i++){
+    const wa=Wp[i][1]>Wp[i+1][1]?[Wp[i+1],Wp[i]]:[Wp[i],Wp[i+1]]; add(new T.Mesh(barGeo(wa[0],wa[1],.46,.34),black),emb).position.z=-.32;
+    const ma=Mp[i][1]>Mp[i+1][1]?[Mp[i+1],Mp[i]]:[Mp[i],Mp[i+1]]; const mb=add(new T.Mesh(barGeo(ma[0],ma[1],.4,.34),crystal),emb); mb.position.z=.12; mb.renderOrder=2;
+    // núcleo de luz dentro del cristal
+    const c0=new T.Vector3(ma[0][0],ma[0][1]+.08,.12), c1=new T.Vector3(ma[1][0],ma[1][1]-.08,.12), L=c0.distanceTo(c1);
+    const core1=new T.Mesh(new T.BoxGeometry(.05,.05,L),glowLine); core1.position.copy(c0).add(c1).multiplyScalar(.5); core1.lookAt(c1); emb.add(core1);
   }
-  const Wp=[[-1.95,1.1],[-0.98,-1.1],[0,.95],[.98,-1.1],[1.95,1.1]];
-  const Mp=[[-1.5,-1.1],[-.62,1.1],[0,-.85],[.62,1.1],[1.5,-1.1]];
-  for(let i=0;i<4;i++){ ship.add(bar(Wp[i],Wp[i+1],.4,.34,matBlack,edgeDim,-.28)); ship.add(bar(Mp[i],Mp[i+1],.36,.3,matBlue,edgeBlue,.12)); }
-  // alas
-  [-1,1].forEach(sx=>{
-    const wing=new T.Mesh(new T.BoxGeometry(1.5,.12,.9),matBlack); wing.position.set(sx*2.55,.35,-.35); wing.rotation.set(.15,0,sx*-.38);
-    wing.add(new T.LineSegments(new T.EdgesGeometry(wing.geometry),edgeDim)); ship.add(wing);
-    const fin=new T.Mesh(new T.BoxGeometry(.12,1.2,.5),matBlue); fin.position.set(sx*1.1,1.55,-.3); fin.rotation.z=sx*-.25; ship.add(fin);
-  });
-  // propulsores
+  // cuernos en V
+  [1,-1].forEach(sx=>{const h=new T.Mesh(new T.ConeGeometry(.06,1.1,8),glowLine); h.position.set(sx*.42,1.65,-.1); h.rotation.z=sx*-.38; emb.add(h);});
+  // estrobo de cola
+  const strobe=new T.Sprite(new T.SpriteMaterial({map:crystalTex,color:0xffffff,transparent:true,depthWrite:false,blending:T.AdditiveBlending})); strobe.position.set(0,.55,-2.3); strobe.scale.set(.6,.6,1); add(strobe);
+  const keyL=new T.DirectionalLight(0xbfe6ff,1.1); keyL.position.set(3,4,5); ship.add(keyL); keyL.target=ship;
+  const rimL=new T.DirectionalLight(0xff9a50,.7); rimL.position.set(-4,-1,-4); ship.add(rimL); rimL.target=ship;
+  const core=new T.PointLight(0x56d0ff,1.2,6); core.position.set(0,.6,2.2); ship.add(core);
   const thr=[];
-  [[-2.9,.15],[2.9,.15],[-1.1,-1.35],[1.1,-1.35],[0,1.3]].forEach(([x,y])=>{
-    const s=new T.Sprite(new T.SpriteMaterial({map:crystalTex,transparent:true,depthWrite:false,blending:T.AdditiveBlending}));
-    s.position.set(x,y,-.7); s.scale.set(1.1,1.1,1); ship.add(s); thr.push(s);
-  });
-  const core=new T.PointLight(0x56d0ff,2.2,8); core.position.set(0,0,1.2); ship.add(core);
+  window.__shipFx=(time,pulse,park)=>{
+    flameMat.uniforms.t.value=time; flameMat.uniforms.p.value=Math.max(.05,1-park*.95);
+    flames.forEach((f,i)=>{const L=(1.3+.45*Math.sin(time*23+i*1.7))*pulse*(1-park*.92); f.m.scale.set(f.s,f.s,f.s*Math.max(.05,L));});
+    nozzles.forEach((n,i)=>{const k=(.8+.2*Math.sin(time*30+i))*pulse*(1-park*.7); n.scale.set(k*flames[i].s,k*flames[i].s,1);});
+    const bl=(time%1.2)<.12; nav.forEach(n=>n.material.opacity=.55+.45*Math.sin(time*3)); strobe.material.opacity=bl?1:.06;
+  };
   ship.visible=false;
 
   /* Estelas de velocidad (en espacio de cámara) */
@@ -1233,14 +1304,14 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
     ship.visible=appear>0.01;
     if(ship.visible){
       const bob=reduce?0:Math.sin(time*1.3)*.06;
-      const sc=lerp(.3,.13,Math.min(1,s/6))*appear;
+      const sc=lerp(.3,.15,Math.min(1,s/6))*appear;
       const sx=mobile?sample(K.shipX,s)*.4:sample(K.shipX,s), bank=Math.max(-.6,Math.min(.6,(sx-shipXPrev)*40)); shipXPrev=sx;
       let px=sx, py=-.95+bob, pz=-5.6;
       if(mobile){py=-1.15+bob; pz=-6.8;}
       ship.position.set(px+(reduce?0:mx*.12),py,pz);
       ship.scale.setScalar(sc*(1-land*.92));
       // inclinación con la velocidad de scroll, el viraje y el puntero
-      eul.set(-.18+Math.max(-.35,Math.min(.35,vel*.0004))+my*.06, mx*.25+bank*.5, -mx*.05-bank+(reduce?0:Math.sin(time*.7)*.03));
+      eul.set(.3+Math.max(-.3,Math.min(.3,vel*.0003))+my*.08, .42+mx*.35+bank*.6, -mx*.06-bank+(reduce?0:Math.sin(time*.7)*.04));
       qTarget.setFromEuler(eul); ship.quaternion.slerp(qTarget,.08);
       // aterrizaje: la nave baja y queda estacionada sobre la plataforma
       if(park>0){
@@ -1248,10 +1319,10 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
         const gx=mobile?.5:.7, gy=mobile?.77:.755, nx=gx*2-1, ny=1-2*gy;
         ship.position.set(lerp(ship.position.x,nx*D*th*camera.aspect,k),lerp(ship.position.y,ny*D*th+.18,k),lerp(ship.position.z,-D,k));
         ship.scale.setScalar(lerp(ship.scale.x,mobile?.16:.185,k));
-        eul.set(lerp(-.18,-.42,k),lerp(0,-.55,k),0); qTarget.setFromEuler(eul); ship.quaternion.slerp(qTarget,.15);
+        eul.set(lerp(.3,.42,k),lerp(.42,-.62,k),0); qTarget.setFromEuler(eul); ship.quaternion.slerp(qTarget,.15);
       }
       const pulse=(.9+.25*Math.sin(time*9)+Math.min(.8,Math.abs(vel)*.0015))*(1-park*.75);
-      thr.forEach((s2,i)=>{const k=(i===4?.8:1.15)*pulse; s2.scale.set(k,k,1);}); core.intensity=2.2*(1-park*.9);
+      window.__shipFx(time,pulse,park); core.intensity=1.2*(1-park*.6);
     }
 
     // atmósfera: la Tierra y el espacio se desvanecen al entrar
@@ -1261,6 +1332,7 @@ footer{position:relative;z-index:5;max-width:1320px;margin:0 auto;padding-block:
     if(window.__journey) window.__journey(s,time,dt,vel);
 
     if(window.__pad) window.__pad(park,time,mobile);
+    if(window.__shipShow){const q=window.__shipShow; ship.visible=true; ship.position.set(q[3]||0,q[4]||0,-6); ship.scale.setScalar(q[5]||.55); ship.quaternion.setFromEuler(new T.Euler(q[0],q[1],q[2]));}
 
     // rocas: pasan junto a la cámara al hacer scroll
     const vr=Math.min(1,Math.abs(vel)/2500), rv=(reduce?0:(.5+vr*14))*(vel>=0?1:-1), rockOn=Math.max(0,Math.min(1,(introP-.9)/.1))*(1-park)*(1-atm);
